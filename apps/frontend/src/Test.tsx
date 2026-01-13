@@ -1,3 +1,12 @@
+import { useState } from "react";
+
 export const TestComponent = () => {
-  return <div>Hello, Vite with React!</div>;
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
 };
