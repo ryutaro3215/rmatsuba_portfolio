@@ -3,6 +3,7 @@ import books from "../assets/books.png";
 import favicon from "../assets/favicon.png";
 import HomeBgi from "../assets/Home-bgi.jpg";
 import management from "../assets/management.png";
+
 export const Home = () => {
   return (
     <div className="mx-auto w-full">

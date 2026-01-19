@@ -1,6 +1,9 @@
 import { IoIosArrowForward, IoIosMail } from "react-icons/io";
 import { Link } from "react-router";
 import { navItems } from "../app/router";
+import profile from "../assets/favicon.png";
+import github from "../assets/github-original.svg";
+import note from "../assets/note.svg";
 
 export const Footer = () => {
   return (
@@ -38,14 +41,14 @@ export const Footer = () => {
             <div className="flex gap-4">
               <a href="https://github.com/ryutaro3215">
                 <img
-                  src="/src/assets/github-original.svg"
+                  src={github}
                   alt="github profile"
                   className="mt-4 h-10 w-10 transition-opacity hover:opacity-70"
                 />
               </a>
               <a href="https://note.com/ma2ri_b2p">
                 <img
-                  src="/src/assets/note.svg"
+                  src={note}
                   alt="note profile"
                   className="mt-4 h-10 w-10 border border-gray-300 transition-opacity hover:opacity-70"
                 />
@@ -56,7 +59,7 @@ export const Footer = () => {
         <section className="w-full rounded-2xl border border-gray-600 sm:w-1/3">
           <div className="rounded-2xl">
             <img
-              src="/src/assets/favicon.png"
+              src={profile}
               alt="profile"
               className="mx-auto max-w-[300px] rounded-2xl px-3"
             />
