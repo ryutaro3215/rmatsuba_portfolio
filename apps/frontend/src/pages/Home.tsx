@@ -1,9 +1,14 @@
+import coding from "../assets/42Tokyo.png";
+import books from "../assets/books.png";
+import favicon from "../assets/favicon.png";
+import HomeBgi from "../assets/Home-bgi.jpg";
+import management from "../assets/management.png";
 export const Home = () => {
   return (
     <div className="mx-auto w-full">
       <div className="relative h-screen w-full">
         <img
-          src="/src/assets/Home-bgi.jpg"
+          src={HomeBgi}
           alt="Home"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -23,7 +28,7 @@ export const Home = () => {
       <section className="mx-auto mb-10 flex max-w-[80%] flex-col gap-5 bg-blue-50 py-5 shadow-2xl sm:flex-row sm:items-center sm:justify-center sm:gap-7 md:gap-20">
         <div className="mx-auto w-[10rem] shrink-0 sm:w-3xs md:mx-0 md:w-2xs xl:w-sm">
           <img
-            src="/src/assets/favicon.png"
+            src={favicon}
             alt="profile"
             className="block h-full w-full rounded-full border border-black object-contain md:border-2"
           />
@@ -68,7 +73,7 @@ export const Home = () => {
             </div>
             <div className="mx-auto flex h-42 w-42 shrink-0 items-center justify-center sm:h-48 sm:w-48 md:h-56 md:w-56 lg:h-64 lg:w-64">
               <img
-                src="/src/assets/management.png"
+                src={management}
                 className="max-h-full max-w-full rounded-lg object-contain"
                 alt="Management"
               />
@@ -88,7 +93,7 @@ export const Home = () => {
             <div className="mx-auto flex h-42 w-42 shrink-0 items-center justify-center sm:h-48 sm:w-48 md:h-56 md:w-56 lg:h-64 lg:w-64">
               <img
                 className="max-h-full max-w-full rounded-lg object-contain"
-                src="/src/assets/42Tokyo.png"
+                src={coding}
                 alt="coding"
               />
             </div>
@@ -106,7 +111,7 @@ export const Home = () => {
             <div className="mx-auto flex size-42 h-42 w-42 shrink-0 items-center justify-center sm:h-48 sm:w-48 md:h-56 md:w-56 lg:h-64 lg:w-64">
               <img
                 className="max-h-full max-w-full rounded-lg object-contain"
-                src="/src/assets/books.png"
+                src={books}
                 alt="books"
               />
             </div>
