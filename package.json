@@ -6,7 +6,8 @@
     "check": "biome check . --max-diagnostics=none --error-on-warnings",
     "check:fix": "biome check . --fix --max-diagnostics=none --error-on-warnings",
     "typecheck": "turbo run typecheck",
-    "prepare": "husky"
+    "prepare": "husky",
+    "css": "npx @biomejs/biome check --write --unsafe ."
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
