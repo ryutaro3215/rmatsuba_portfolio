@@ -6,7 +6,7 @@ import { Header } from "../components/Header";
 //画面幅の制限は各ページコンポーネント側で行う。
 export function DefaultLayout() {
   return (
-    <div className="min-h-dvh bg-white text-slate-900">
+    <div className="min-h-dvh overflow-x-hidden bg-white text-slate-900">
       <Header />
       <main className="mx-auto w-full">
         <Outlet />
