@@ -1,14 +1,16 @@
 import type { Book } from "@mysite/shared";
 
+export const favoriteBooks: number[] = [2, 4, 5, 6];
+
 export const books: Book[] = [
   {
     id: 1,
     title: "データ解析のための数理統計入門",
     author: "久保川達也",
-    cover: "データ解析のための数理統計入門.jpg",
+    cover: "データ解析のための数理統計入門.jpg",
     genre: "数学",
     tags: ["数学", "統計学", "データ解析", "入門", "基礎", "応用", "大学数学"],
-    status: "finished",
+    status: "read",
     rating: 5,
   },
   {
@@ -18,7 +20,7 @@ export const books: Book[] = [
     cover: "現代数理統計学の基礎.jpg",
     genre: "数学",
     tags: ["数学", "統計学", "データ解析"],
-    status: "finished",
+    status: "read",
     rating: 5,
   },
   {
@@ -28,7 +30,7 @@ export const books: Book[] = [
     cover: "現代数理統計学.jpg",
     genre: "数学",
     tags: ["数学", "統計学", "データ解析"],
-    status: "finished",
+    status: "read",
     rating: 5,
   },
   {
@@ -38,7 +40,7 @@ export const books: Book[] = [
     cover: "ミクロ経済学の力.jpg",
     genre: "経済学",
     tags: ["経済学", "ミクロ経済学"],
-    status: "finished",
+    status: "read",
     rating: 5,
   },
   {
@@ -48,7 +50,7 @@ export const books: Book[] = [
     cover: "世界標準の経営理論.jpg",
     genre: "経営学",
     tags: ["経営学", "マネジメント"],
-    status: "finished",
+    status: "read",
     rating: 5,
   },
   {
@@ -58,7 +60,7 @@ export const books: Book[] = [
     cover: "日本語の作文技術.jpg",
     genre: "語学",
     tags: ["語学", "日本語", "作文"],
-    status: "finished",
+    status: "read",
     rating: 5,
   },
 ];

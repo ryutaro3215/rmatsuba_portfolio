@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import { DefaultLayout } from "../layouts/DefaultLayout";
+import { About } from "../pages/About";
 import { BookDetail } from "../pages/BookDetail";
 import { Home } from "../pages/Home";
 import { Library } from "../pages/Library";
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
       { index: true, Component: Home },
       { path: "books", Component: Library },
       { path: "books/:bookId", Component: BookDetail },
+      { path: "about", Component: About },
       { path: "*", Component: NotFound },
     ],
   },

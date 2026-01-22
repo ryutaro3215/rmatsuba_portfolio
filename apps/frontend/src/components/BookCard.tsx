@@ -1,10 +1,10 @@
 import type { Book } from "@mysite/shared";
 import { Link } from "react-router";
-import { coversByFilename } from "../app/importBookCover";
+import { bookCoverModules, createImagesByFilename } from "../app/importImages";
 import { genreTheme } from "../data/genreTheme";
 
 export const BookCard = (data: Book) => {
-  const coverUrl = coversByFilename[data.cover];
+  const coverUrl = createImagesByFilename(bookCoverModules)[data.cover];
   const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-gray-200";
   const genreTextColor = genreTheme[data.genre]?.textColor || "text-black";
   const genreClass = `${genreBgColor} ${genreTextColor} text-xs border border-b rounded-full px-2 py-1 truncate w-fit max-w-full`;
