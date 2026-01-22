@@ -1,9 +1,9 @@
 import type { Book } from "@mysite/shared";
-import { coversByFilename } from "../app/importBookCover";
+import { bookCoverModules, createImagesByFilename } from "../app/importImages";
 import { genreTheme } from "../data/genreTheme";
 
 export const DetailBookCard = (data: Book) => {
-  const coverUrl = coversByFilename[data.cover];
+  const coverUrl = createImagesByFilename(bookCoverModules)[data.cover];
   const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-gray-200";
   const genreTextColor = genreTheme[data.genre]?.textColor || "text-black";
   const genreClass = `${genreBgColor} ${genreTextColor} text-sm sm:text-base md:text-xl lg:text-2xl border border-b rounded-full bg-blue-600 px-2 py-1 truncate text-left self-start w-fit max-w-full mb-2`;

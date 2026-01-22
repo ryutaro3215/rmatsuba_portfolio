@@ -18,7 +18,7 @@ export const Library = () => {
               Library
             </p>
             <p className="mx-auto w-full max-w-[90%] text-center font-source-serif-4 text-[1rem] text-white sm:text-[2rem] md:text-[3rem] lg:text-[4rem]">
-              Scientia est potentia
+              読んだ本の記録
             </p>
           </div>
         </div>
