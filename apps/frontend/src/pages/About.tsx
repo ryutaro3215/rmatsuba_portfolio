@@ -1,7 +1,7 @@
 import type { Book, Tech } from "@mysite/shared";
 import { Link } from "react-router";
 import { createImagesByFilename, techIconModules } from "../app/importImages";
-import AboutBgi from "../assets/about.jpg";
+import AboutBgi from "../assets/About-bgi.jpg";
 import ProfilePic from "../assets/favicon.png";
 import { BookCard } from "../components/BookCard";
 import { books, favoriteBooks } from "../data/books";
@@ -78,7 +78,10 @@ export const About = () => {
             </div>
           </div>
         </section>
-        <section className="mb-10 w-full border border-gray-300 p-3 pb-7 shadow-lg">
+        <section
+          id="research"
+          className="mb-10 w-full scroll-mt-80 border border-gray-300 p-3 pb-7 shadow-lg"
+        >
           <h3 className="mb-3 w-full text-center font-bold text-lg sm:mb-5 sm:text-2xl md:text-4xl lg:text-5xl">
             Research
           </h3>
@@ -92,7 +95,10 @@ export const About = () => {
             大学院ではこのテーマから発展させ引き続き研究を進めて行く予定です。
           </p>
         </section>
-        <section className="mb-10 w-full border border-gray-300 p-3 pb-7 shadow-lg">
+        <section
+          id="coding"
+          className="mb-10 w-full scroll-mt-80 border border-gray-300 p-3 pb-7 shadow-lg"
+        >
           <h3 className="mb-3 w-full text-center font-bold text-lg sm:mb-5 sm:text-2xl md:text-4xl lg:text-5xl">
             Coding
           </h3>
@@ -213,7 +219,10 @@ export const About = () => {
             </div>
           </div>
         </section>
-        <section className="mb-10 w-full border border-gray-300 p-3 pb-10 shadow-lg">
+        <section
+          id="books"
+          className="mb-10 w-full border border-gray-300 p-3 pb-10 shadow-lg"
+        >
           <h3 className="mb-3 w-full text-center font-bold text-lg sm:mb-5 sm:text-2xl md:text-4xl lg:text-5xl">
             Books
           </h3>
