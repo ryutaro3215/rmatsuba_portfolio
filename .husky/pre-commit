@@ -1,2 +1,7 @@
 pnpm check
 pnpm typecheck
+
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+bun run apps/frontend/scripts/update_post.ts

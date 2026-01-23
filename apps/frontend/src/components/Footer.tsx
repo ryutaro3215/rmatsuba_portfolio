@@ -58,11 +58,13 @@ export const Footer = () => {
         </section>
         <section className="w-full rounded-2xl border border-gray-600 sm:w-1/3">
           <div className="rounded-2xl">
-            <img
-              src={profile}
-              alt="profile"
-              className="mx-auto max-w-[300px] rounded-2xl px-3"
-            />
+            <div className="mx-auto w-fit rounded-2xl px-3">
+              <img
+                src={profile}
+                alt="profile"
+                className="w-full rounded-2xl object-contain"
+              />
+            </div>
             <div className="mx-auto mt-4 mb-2 flex w-full max-w-[300px] flex-col px-3">
               <h3 className="pb-4 text-center text-2xl text-black leading-none">
                 Ryutaro Matsuba
