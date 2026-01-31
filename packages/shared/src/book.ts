@@ -35,6 +35,7 @@ export const BookSchema = z.object({
   url: z.url().optional(),
 });
 
+export type GenreOption = { value: Genre; label: string };
 export type Book = z.infer<typeof BookSchema>;
 export const BooksSchema = z.array(BookSchema);
 export type Genre = z.infer<typeof BookGenreSchema>;
