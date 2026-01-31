@@ -1,5 +1,10 @@
-import { BookGenreSchema, type GenreOption } from "@mysite/shared";
-import { useState } from "react";
+import {
+  BookGenreSchema,
+  BookGenres,
+  type GenreOption,
+  type GenreSlug,
+} from "@mysite/shared";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import Selector from "react-select";
 import BookBgi from "../assets/Library-bgi.jpg";
@@ -11,18 +16,44 @@ export const Library = () => {
     value: genre,
     label: genre,
   }));
+
   const [searchParams, setSearchParams] = useSearchParams();
+
   const [selectedOptions, setSelectedOptions] = useState<GenreOption[]>(() => {
-    const genresFromParams = searchParams.getAll("genre");
-    return genreOptions.filter((opt) => genresFromParams.includes(opt.value));
+    const slugsFromParams = searchParams.getAll("genre");
+    return slugsFromParams
+      .map((slug) => {
+        const label = BookGenres[slug as GenreSlug];
+        return label ? { value: label, label: label } : null;
+      })
+      .filter((opt) => opt !== null);
   });
 
+  useEffect(() => {
+    const slugsFromParams = searchParams.getAll("genre");
+    const restoredOptions = slugsFromParams
+      .map((slug) => {
+        const label = BookGenres[slug as GenreSlug];
+        return label ? { value: label, label: label } : null;
+      })
+      .filter((opt) => opt !== null);
+    if (JSON.stringify(restoredOptions) !== JSON.stringify(selectedOptions)) {
+      setSelectedOptions(restoredOptions as GenreOption[]);
+    }
+  }, [searchParams, selectedOptions]);
+
   const handleChange = (newValue: readonly GenreOption[]) => {
-    setSelectedOptions(Array.from(newValue));
+    const arrayValue = Array.from(newValue);
+    setSelectedOptions(arrayValue);
 
     const newParams = new URLSearchParams();
-    newValue.forEach((opt) => {
-      newParams.append("genre", opt.value);
+    arrayValue.forEach((opt) => {
+      const slug = (Object.keys(BookGenres) as GenreSlug[]).find(
+        (key) => BookGenres[key] === opt.value,
+      );
+      if (slug) {
+        newParams.append("genre", slug);
+      }
     });
     setSearchParams(newParams, {
       preventScrollReset: true,
@@ -56,7 +87,7 @@ export const Library = () => {
           </div>
         </div>
       </div>
-      <div className="mx-auto my-6 max-w-[80%]">
+      <div className="mx-auto my-6 max-w-[80%]" id="genre-selector">
         <Selector
           options={genreOptions}
           isMulti={true}

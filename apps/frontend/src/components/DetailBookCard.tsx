@@ -1,4 +1,5 @@
-import type { Book } from "@mysite/shared";
+import { type Book, BookGenres, type GenreSlug } from "@mysite/shared";
+import { useNavigate } from "react-router";
 import { bookCoverModules, createImagesByFilename } from "../app/importImages";
 import { genreTheme } from "../data/genreTheme";
 
@@ -6,8 +7,20 @@ export const DetailBookCard = (data: Book) => {
   const coverUrl = createImagesByFilename(bookCoverModules)[data.cover];
   const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-gray-200";
   const genreTextColor = genreTheme[data.genre]?.textColor || "text-black";
-  const genreClass = `${genreBgColor} ${genreTextColor} text-sm sm:text-base md:text-xl lg:text-2xl border border-b rounded-full bg-blue-600 px-2 py-1 truncate text-left self-start w-fit max-w-full mb-2`;
+  const genreClass = `cursor-pointer ${genreBgColor} ${genreTextColor} text-sm sm:text-base md:text-xl lg:text-2xl border border-b rounded-full bg-blue-600 px-2 py-1 truncate text-left self-start w-fit max-w-full mb-2`;
 
+  const navigate = useNavigate();
+  const genreSlug = (Object.keys(BookGenres) as GenreSlug[]).find(
+    (key) => BookGenres[key] === data.genre,
+  );
+
+  const handleGenreClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (genreSlug) {
+      navigate(`/books?genre=${genreSlug}#genre-selector`);
+    }
+  };
   return (
     <article className="flex h-[100vh] w-full flex-col items-center gap-5 sm:flex-row">
       <div className="h-[80vh] w-full sm:max-w-[50%]">
@@ -24,7 +37,9 @@ export const DetailBookCard = (data: Book) => {
         <p className="mb-2 w-full text-left text-base sm:text-xl md:text-2xl lg:text-4xl">
           {data.author}
         </p>
-        <p className={genreClass}># {data.genre}</p>
+        <button type="button" className={genreClass} onClick={handleGenreClick}>
+          # {data.genre}
+        </button>
         <ul className="flex list-none flex-wrap gap-1 border-black border-t px-2 py-2">
           {data.tags?.map((tag) => (
             <li
