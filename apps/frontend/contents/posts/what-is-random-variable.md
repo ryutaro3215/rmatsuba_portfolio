@@ -3,8 +3,9 @@ title: "確率変数って何？"
 emoji: "🧿"
 date: "2026-02-09"
 created_at: "2026-02-09T03:58:58.025Z"
-updated_at: "2026-02-10T19:47:18.890Z"
-draft: true slug: "what-is-random-variable"
+updated_at: "2026-02-10T19:54:09.528Z"
+draft: true
+slug: "what-is-random-variable"
 tags: []
 ---
 
