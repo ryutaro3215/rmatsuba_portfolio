@@ -3,7 +3,7 @@ title: "Claude APIで論文要約を自動化！Obsidian連携の研究支援ツ
 emoji: "🖥️"
 date: "2026-02-11"
 created_at: "2026-02-10T19:44:34.601Z"
-updated_at: "2026-02-10T19:47:18.874Z"
+updated_at: "2026-02-11T07:28:53.077Z"
 draft: true
 slug: "paper-sage-ai-summarizer-obsidian"
 tags: ["Claude API", "Obsidian", "Python", "研究ツール", "自動化"]
@@ -143,7 +143,64 @@ def detect_paper_type(self, text):
 python process_papers.py empirical
 ```
 
-### 2. ローディングアニメーション
+### 2. 要約言語の選択機能
+
+グローバルな研究では、英語論文も日本語論文も読むため、**要約の言語を選択できる機能**を実装しました。
+
+```python
+def summarize(self, text, paper_type, language=None):
+    """Claude APIで要約生成"""
+    # 言語指定の追加プロンプト
+    language_instruction = ""
+    if language == 'ja':
+        language_instruction = "\n**重要: 必ず日本語で要約を出力してください。**\n"
+    elif language == 'en':
+        language_instruction = "\n**Important: You must output the summary in English.**\n"
+
+    full_prompt = f"""{self.system_prompt}
+{language_instruction}
+---
+{task_prompt}
+---
+論文テキスト:
+{text[:150000]}
+"""
+```
+
+**使い方**：
+
+```bash
+# 英語論文を日本語で要約
+python process_papers.py empirical ja
+
+# 日本語論文を英語で要約（英語で発表する場合など）
+python process_papers.py theoretical en
+
+# 論文タイプと言語を両方指定
+python process_papers.py review ja
+
+# 論文の言語に合わせる（デフォルト）
+python process_papers.py
+```
+
+**実用例**：
+
+- 海外の最新論文を日本語で素早く把握
+- 日本語論文の内容を英語で整理（英語での発表準備）
+- ゼミ資料を統一言語で作成
+
+引数の順序は自由なので、`ja empirical`でも`empirical ja`でもOKです。メタデータにも言語情報が記録されるため、後から「この要約は何語で書いたっけ？」と迷うこともありません。
+
+```markdown
+---
+created: 2026-02-11T15:30:00
+paper_type: empirical
+language: ja
+source: [[strategic_management_2024.pdf]]
+---
+```
+
+### 3. ローディングアニメーション
 
 Claude APIは数秒〜数十秒かかるため、処理中であることを視覚的に示す必要がありました。
 
@@ -180,7 +237,7 @@ def summarize(self, text, paper_type):
 
 こんな感じでスピナーが回転します。
 
-### 3. エラーハンドリング
+### 4. エラーハンドリング
 
 PDFの移動に失敗した場合、要約生成に失敗した場合など、各ステップでエラーハンドリングを実装：
 
@@ -257,12 +314,39 @@ python process_papers.py
 # 3. Obsidianで要約を確認
 ```
 
+### コマンドオプション
+
+```bash
+# 基本（論文タイプ自動判定、言語は論文に合わせる）
+python process_papers.py
+
+# 論文タイプを指定
+python process_papers.py empirical
+python process_papers.py theoretical
+python process_papers.py review
+
+# 要約言語を指定
+python process_papers.py ja  # 日本語で要約
+python process_papers.py en  # 英語で要約
+
+# 論文タイプと言語を両方指定
+python process_papers.py empirical ja
+python process_papers.py theoretical en
+python process_papers.py review ja
+
+# ヘルプ表示
+python process_papers.py --help
+```
+
 ### 実行例
 
 ```bash
-$ python process_papers.py
+$ python process_papers.py empirical ja
 
 ✅ プロンプトファイル読み込み完了
+
+📌 論文タイプ指定: empirical
+🌐 要約言語: 日本語
 
 ============================================================
 📚 3本のPDFを処理します
@@ -273,8 +357,7 @@ $ python process_papers.py
 📄 処理中: strategic_management_2024.pdf
 ============================================================
   ✅ テキスト抽出完了: 45,234 文字
-  📊 判定スコア - empirical:8, theoretical:2, review:1
-  📋 判定結果: empirical
+  📋 指定タイプ: empirical
   📁 ディレクトリ作成: MyPage/Research/empirical/strategic_management_2024
   📦 PDF移動完了
   🤖 Claude API呼び出し中 ⠹
@@ -293,12 +376,16 @@ $ python process_papers.py
 
 ```bash
 alias paper-sage="cd ~/Myprogram/paper-sage && source venv/bin/activate && python process_papers.py && deactivate && cd -"
+alias paper-sage-ja="cd ~/Myprogram/paper-sage && source venv/bin/activate && python process_papers.py ja && deactivate && cd -"
+alias paper-sage-en="cd ~/Myprogram/paper-sage && source venv/bin/activate && python process_papers.py en && deactivate && cd -"
 ```
 
 使い方：
 
 ```bash
-paper-sage  # これだけ！
+paper-sage     # 基本実行
+paper-sage-ja  # 日本語で要約
+paper-sage-en  # 英語で要約
 ```
 
 ## 生成される要約の例
@@ -309,6 +396,7 @@ Obsidianで開くと、こんな感じのMarkdownファイルが生成されま�
 ---
 created: 2026-02-11T15:30:00
 paper_type: empirical
+language: ja
 source: [[strategic_management_2024.pdf]]
 ---
 
@@ -333,6 +421,12 @@ source: [[strategic_management_2024.pdf]]
 
 （以下略）
 ```
+
+**メタデータの活用**：
+
+- `paper_type`: 論文タイプで絞り込み検索
+- `language`: 要約言語で整理
+- `source`: 元PDFへのリンク（Obsidian内）
 
 ## コスト実績
 
@@ -383,12 +477,17 @@ source: [[strategic_management_2024.pdf]]
 ### 3. Dataview連携
 
 - 論文データベースとして活用
-- タイプ別、年度別の集計
+- タイプ別、年度別、言語別の集計
 
 ### 4. 複数モデルの併用
 
 - 重要な論文だけOpus 4.5で再要約
 - 軽く読む論文はHaiku 4.5でコスト削減
+
+### 5. 多言語対応の強化
+
+- 中国語、韓国語などの論文にも対応
+- 論文の言語を自動検出して要約言語を提案
 
 ## まとめ
 
@@ -396,10 +495,11 @@ source: [[strategic_management_2024.pdf]]
 
 ✅ **月300円で20-30本処理**できる  
 ✅ **論文タイプに応じた最適な要約**  
+✅ **日本語・英語の要約言語選択**が可能  
 ✅ **Obsidianとシームレスに統合**  
 ✅ **セットアップは1時間程度**
 
-研究者、大学院生にとって、論文を読む効率が劇的に上がるツールになると思います。
+研究者、大学院生にとって、論文を読む効率が劇的に上がるツールになると思います。特に、英語論文を日本語で要約できる機能は、海外の最新研究をキャッチアップする上で非常に有用です。
 
 ソースコードは[GitHub](https://github.com/yourusername/paper-sage)で公開予定です。
 
