@@ -1,6 +1,5 @@
 import type { ParsedPost } from "@mysite/shared";
 import { importBlogData } from "../app/importBlogData";
-import BlogBgi from "../assets/Blog-bgi.png";
 import { PostCard } from "../components/PostCard";
 
 export const Blog = () => {
@@ -12,28 +11,23 @@ export const Blog = () => {
   });
   return (
     <div className="mx-auto w-full">
-      <div className="relative h-screen w-full">
-        <img
-          src={BlogBgi}
-          alt="Home"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/80" />
-        <div className="relative z-10 flex h-full items-center justify-center">
-          <div className="felx w-full flex-col items-center justify-center">
-            <p className="mx-auto w-full max-w-[90%] text-center font-source-serif-4 text-[3rem] text-white sm:text-[6rem] md:text-[10rem] lg:text-[18rem]">
-              Blog
-            </p>
-            <p className="mx-auto w-full max-w-[90%] text-center font-source-serif-4 text-[1rem] text-white sm:text-[2rem] md:text-[3rem] lg:text-[4rem]">
-              日々の思考と勉強の備忘録
-            </p>
-          </div>
+      {/* Page header */}
+      <section className="mx-auto max-w-7xl px-6 pt-32 pb-16 sm:pt-40 sm:pb-20">
+        <h1 className="font-bold font-source-serif-4 text-4xl text-slate-900 tracking-tight sm:text-5xl lg:text-6xl dark:text-white">
+          Blog
+        </h1>
+        <p className="mt-3 text-base text-slate-600 leading-relaxed dark:text-slate-400">
+          日々の思考と勉強の備忘録
+        </p>
+        <div className="mt-6 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700" />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-20">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {descendingPosts.map((post) => {
+            return <PostCard key={post.frontMatter.slug} {...post} />;
+          })}
         </div>
-      </div>
-      <section className="mx-auto mt-10 mb-10 grid max-w-[80%] grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {descendingPosts.map((post) => {
-          return <PostCard key={post.frontMatter.slug} {...post} />;
-        })}
       </section>
     </div>
   );

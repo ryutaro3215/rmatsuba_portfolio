@@ -5,27 +5,28 @@ export const PostCard = (data: ParsedPost) => {
   const fm = data.frontMatter;
   const yymmdd = fm.created_at.slice(0, 10).replace(/-/g, "/");
   return (
-    <Link to={`/blog/${fm.slug}`} className="w-full">
-      <article className="flex w-full flex-row gap-2 rounded-md border border-gray-400 p-2 shadow-md hover:shadow-2xl hover:ring-2 hover:ring-blue-200 sm:gap-4">
-        <p className="flex items-center justify-center text-6xl sm:text-7xl lg:text-8xl">
+    <Link to={`/blog/${fm.slug}`} className="h-full">
+      <article className="flex h-full flex-row gap-3 rounded-xl border border-slate-200 bg-white p-4 transition-all duration-200 hover:border-slate-300 hover:shadow-lg sm:gap-4 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
+        <p className="flex shrink-0 items-center justify-center text-5xl sm:text-6xl lg:text-7xl">
           {fm.emoji}
         </p>
-        <div className="flex min-w-0 flex-col gap-1 p-2">
-          <h3 className="line-clamp-2 font-bold text-sm sm:text-base md:text-lg lg:text-xl">
+        <div className="flex min-w-0 flex-col gap-2">
+          <h3 className="line-clamp-2 font-bold text-slate-900 text-sm leading-snug sm:text-base dark:text-white">
             {fm.title}
           </h3>
-          <ul className="relative flex gap-1 overflow-x-auto overflow-y-hidden whitespace-nowrap">
+          <div className="flex flex-wrap gap-1.5">
             {fm.tags.map((tag) => (
-              <li
+              <span
                 key={tag}
-                className="shrink-0 rounded-full border border-b px-1.5 py-0.5 font-light text-xs sm:text-sm lg:text-base"
+                className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 text-xs dark:bg-slate-800 dark:text-slate-400"
               >
                 #{tag}
-              </li>
+              </span>
             ))}
-            <div className="pointer-events-none sticky top-0 right-0 h-full w-6 bg-gradient-to-l from-white" />
-          </ul>
-          <p className="w-full text-xs sm:text-sm md:text-base">{yymmdd}</p>
+          </div>
+          <p className="mt-auto text-slate-500 text-xs dark:text-slate-500">
+            {yymmdd}
+          </p>
         </div>
       </article>
     </Link>

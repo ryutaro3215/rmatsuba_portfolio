@@ -11,7 +11,7 @@ export const BlogDetail = () => {
   );
 
   return (
-    <div className="mx-auto mt-20 max-w-[80%]">
+    <div className="mx-auto max-w-7xl px-6 pt-24">
       {currentPost && <DetailBlogCard {...currentPost} />}
     </div>
   );

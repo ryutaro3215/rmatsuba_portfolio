@@ -1,11 +1,43 @@
 import type { Book, Tech } from "@mysite/shared";
 import { Link } from "react-router";
 import { createImagesByFilename, techIconModules } from "../app/importImages";
-import AboutBgi from "../assets/About-bgi.jpg";
 import ProfilePic from "../assets/favicon.png";
 import { BookCard } from "../components/BookCard";
 import { books, favoriteBooks } from "../data/books";
 import { techs } from "../data/tech";
+
+const TechCategory = ({
+  title,
+  items,
+  icons,
+}: {
+  title: string;
+  items: Tech[];
+  icons: Record<string, string>;
+}) => (
+  <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+    <p className="mb-3 font-semibold text-slate-900 text-sm dark:text-white">
+      {title}
+    </p>
+    <div className="flex flex-row flex-wrap gap-2">
+      {items.map((item) => (
+        <a
+          key={item.id}
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-lg p-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          <img
+            src={icons[item.cover]}
+            alt={item.name}
+            className="h-8 w-8 object-contain sm:h-10 sm:w-10"
+          />
+        </a>
+      ))}
+    </div>
+  </div>
+);
 
 export const About = () => {
   const techIcons = createImagesByFilename(techIconModules);
@@ -26,238 +58,168 @@ export const About = () => {
   );
   return (
     <div className="mx-auto w-full">
-      <div className="relative h-screen w-full">
-        <img
-          src={AboutBgi}
-          alt="Home"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/80" />
-        <div className="relative z-10 flex h-full items-center justify-center">
-          <div className="felx w-full flex-col items-center justify-center">
-            <p className="mx-auto w-full max-w-[90%] text-center font-source-serif-4 text-[3rem] text-white sm:text-[6rem] md:text-[10rem] lg:text-[18rem]">
-              About Me
-            </p>
-            <p className="mx-auto w-full max-w-[90%] text-center font-source-serif-4 text-[1rem] text-white sm:text-[2rem] md:text-[3rem] lg:text-[4rem]">
-              「私」について
-            </p>
-          </div>
-        </div>
-      </div>
-      <div className="mx-auto my-10 flex max-w-[80%] flex-col gap-8">
-        <section className="mb-10 w-full border border-gray-300 p-3 pb-7 shadow-lg">
-          <h3 className="mb-3 w-full text-center font-bold text-lg sm:mb-5 sm:text-2xl md:text-4xl lg:text-5xl">
-            Profile
-          </h3>
-          <div className="mx-auto flex w-full flex-col items-stretch sm:flex-row sm:justify-center sm:gap-8 lg:max-w-[80%]">
-            <div className="mb-3">
-              <div className="mx-auto mb-5 w-[10rem] sm:mt-4 md:w-[15rem] lg:w-[22rem]">
+      {/* Page header */}
+      <section className="mx-auto max-w-7xl px-6 pt-32 pb-16 sm:pt-40 sm:pb-20">
+        <h1 className="font-bold font-source-serif-4 text-4xl text-slate-900 tracking-tight sm:text-5xl lg:text-6xl dark:text-white">
+          About Me
+        </h1>
+        <p className="mt-3 text-base text-slate-600 leading-relaxed dark:text-slate-400">
+          「私」について
+        </p>
+        <div className="mt-6 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700" />
+      </section>
+
+      <div className="mx-auto flex max-w-7xl flex-col gap-20 px-6 pb-20">
+        {/* Profile */}
+        <section>
+          <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:gap-12">
+            <div className="shrink-0">
+              <div className="mx-auto w-40 sm:w-48 md:w-56">
                 <img
-                  className="block h-full w-full rounded-full border border-black object-contain md:border-2"
+                  className="block w-full rounded-full border border-slate-200 object-contain dark:border-slate-700"
                   src={ProfilePic}
                   alt="profile"
                 />
               </div>
-              <p className="mb-1 text-center font-bold text-sm sm:text-lg md:text-2xl lg:text-3xl">
+              <p className="mt-3 text-center font-bold text-lg text-slate-900 dark:text-white">
                 Ryutaro Matsuba
               </p>
-              <p className="mb-1 text-center font-bold text-xs sm:text-base md:text-xl lg:text-2xl">
+              <p className="text-center text-slate-500 text-sm dark:text-slate-400">
                 University Student
               </p>
             </div>
-            <div className="mt-4 flex w-full flex-col justify-center sm:w-[50%] md:w-[50%] md:gap-3 lg:gap-5">
-              <p className="mb-3 font-light text-sm sm:text-base md:text-lg lg:text-xl">
+            <div className="flex flex-col gap-4">
+              <p className="text-base text-slate-600 leading-relaxed dark:text-slate-400">
                 東京理科大学経営学部経営学科所属の大学4年。趣味は読書や書店巡り、好きなアーティストのライブに行ったり、美味しいものを食べること。
               </p>
-              <p className="mb-3 font-light text-sm sm:text-base md:text-lg lg:text-xl">
+              <p className="text-base text-slate-600 leading-relaxed dark:text-slate-400">
                 好奇心が強く、自分が気になったことや知りたいことについて調べるのが好きで、読む本のジャンルも社会科学や人文学をメインにいろいろ読んでいます。
               </p>
-              <p className="mb-3 font-light text-sm sm:text-base md:text-lg lg:text-xl">
+              <p className="text-base text-slate-600 leading-relaxed dark:text-slate-400">
                 このブログでは私が考えたことや疑問に思ったこと、学んだことの備忘録として書いています。自分が書きたいことをメインとしながらも、読んでもらう人に価値を感じてもらえるように書いていますのでぜひ読んでいってください。
               </p>
             </div>
           </div>
         </section>
-        <section
-          id="research"
-          className="mb-10 w-full scroll-mt-80 border border-gray-300 p-3 pb-7 shadow-lg"
-        >
-          <h3 className="mb-3 w-full text-center font-bold text-lg sm:mb-5 sm:text-2xl md:text-4xl lg:text-5xl">
+
+        {/* Research */}
+        <section id="research" className="scroll-mt-24">
+          <h2 className="font-bold text-2xl text-slate-900 sm:text-3xl dark:text-white">
             Research
-          </h3>
-          <p className="mb-3 w-full font-light text-sm sm:text-base md:text-lg lg:text-xl">
+          </h2>
+          <div className="mt-2 h-px w-16 bg-slate-900 dark:bg-white" />
+          <p className="mt-6 text-base text-slate-600 leading-relaxed dark:text-slate-400">
             現在大学では経営学における
-            <span className="font-bold">経営組織や経営管理・経営戦略論</span>
+            <span className="font-bold text-slate-900 dark:text-white">
+              経営組織や経営管理・経営戦略論
+            </span>
             を専門として勉強しています。卒業研究では主に組織の中における人材の多様性と組織の知の関係性をテーマとしており、具体的には個人内の多様性である
-            <span className="font-bold">イントラパーソナルダイバーシティ</span>
-            と<span className="font-bold">認知的柔軟性</span>
+            <span className="font-bold text-slate-900 dark:text-white">
+              イントラパーソナルダイバーシティ
+            </span>
+            と
+            <span className="font-bold text-slate-900 dark:text-white">
+              認知的柔軟性
+            </span>
             の関連性についての研究を行なっています。
             大学院ではこのテーマから発展させ引き続き研究を進めて行く予定です。
           </p>
         </section>
-        <section
-          id="coding"
-          className="mb-10 w-full scroll-mt-80 border border-gray-300 p-3 pb-7 shadow-lg"
-        >
-          <h3 className="mb-3 w-full text-center font-bold text-lg sm:mb-5 sm:text-2xl md:text-4xl lg:text-5xl">
+
+        {/* Coding */}
+        <section id="coding" className="scroll-mt-24">
+          <h2 className="font-bold text-2xl text-slate-900 sm:text-3xl dark:text-white">
             Coding
-          </h3>
-          <p className="mb-3 w-full font-light font-right text-sm sm:text-base md:text-lg lg:text-xl">
-            <a href="https://42tokyo.jp/" className="font-bold underline">
+          </h2>
+          <div className="mt-2 h-px w-16 bg-slate-900 dark:bg-white" />
+          <p className="mt-6 text-base text-slate-600 leading-relaxed dark:text-slate-400">
+            <a
+              href="https://42tokyo.jp/"
+              className="font-bold text-slate-900 underline dark:text-white"
+            >
               42Tokyo
             </a>
             というエンジニア養成機関を卒業。完全初学者からC言語を通じてコンピュータサイエンスの基礎を習得し、同時に基本情報技術者試験も一発で合格。個人ではTypeScriptをはじめReactやVite,
             HonoといったWeb技術や、rustなども勉強中。本ブログも自作しており、
             扱った技術に関するブログ記事も投稿しています。
           </p>
-          <div className="mx-auto flex w-full flex-col border-gray-300 border-t pt-3 lg:flex-row lg:justify-center lg:gap-5">
-            <div className="mb-3 w-full">
-              <p className="mb-1.5 font-semibold text-sm sm:text-base md:text-lg lg:text-xl">
-                Languages
-              </p>
-              <ul className="flex flex-row flex-wrap gap-0.5 sm:gap-1.5 md:gap-2 lg:gap-4">
-                {languages.map((language) => (
-                  <li
-                    key={language.id}
-                    className="inline-block w-[2rem] sm:w-[2.5rem] md:w-[3rem] lg:w-[3.5rem]"
-                  >
-                    <a
-                      href={language.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="transition hover:opacity-80"
-                    >
-                      <img
-                        src={techIcons[language.cover]}
-                        alt={language.name}
-                        className="h-full w-full object-contain"
-                      />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="mb-3 w-full">
-              <p className="mb-1.5 font-semibold text-sm sm:text-base md:text-lg lg:text-xl">
-                Frameworks & Libraries
-              </p>
-              <ul className="flex flex-row flex-wrap gap-0.5 sm:gap-1.5 md:gap-2 lg:gap-4">
-                {frameworksAndLibraries.map((frameworksAndLibraries) => (
-                  <li
-                    key={frameworksAndLibraries.id}
-                    className="inline-block w-[2rem] sm:w-[2.5rem] md:w-[3rem] lg:w-[3.5rem]"
-                  >
-                    <a
-                      href={frameworksAndLibraries.url}
-                      className="transition hover:opacity-80"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        src={techIcons[frameworksAndLibraries.cover]}
-                        alt={frameworksAndLibraries.name}
-                        className="h-full w-full object-contain"
-                      />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="mb-3 w-full">
-              <p className="mb-1.5 font-semibold text-sm sm:text-base md:text-lg lg:text-xl">
-                Infrastructure and Environments
-              </p>
-              <ul className="flex flex-row flex-wrap gap-0.5 sm:gap-1.5 md:gap-2 lg:gap-4">
-                {infrastructuresAndEnvironments.map(
-                  (infrastructuresAndEnvironments) => (
-                    <li
-                      key={infrastructuresAndEnvironments.id}
-                      className="inline-block w-[2rem] sm:w-[2.5rem] md:w-[3rem] lg:w-[3.5rem]"
-                    >
-                      <a
-                        className="transition hover:opacity-80"
-                        href={infrastructuresAndEnvironments.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img
-                          src={techIcons[infrastructuresAndEnvironments.cover]}
-                          alt={infrastructuresAndEnvironments.name}
-                          className="h-full w-full object-contain"
-                        />
-                      </a>
-                    </li>
-                  ),
-                )}
-              </ul>
-            </div>
-            <div className="mb-3 w-full">
-              <p className="mb-1.5 font-semibold text-sm sm:text-base md:text-lg lg:text-xl">
-                Tooling and Workflows
-              </p>
-              <ul className="flex flex-row flex-wrap gap-0.5 sm:gap-1.5 md:gap-2 lg:gap-4">
-                {toolingAndWorkflows.map((toolingAndWorkflows) => (
-                  <li
-                    key={toolingAndWorkflows.id}
-                    className="inline-block w-[2rem] sm:w-[2.5rem] md:w-[3rem] lg:w-[3.5rem]"
-                  >
-                    <a
-                      className="transition hover:opacity-80"
-                      href={toolingAndWorkflows.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        src={techIcons[toolingAndWorkflows.cover]}
-                        alt={toolingAndWorkflows.name}
-                        className="h-full w-full object-contain"
-                      />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <TechCategory
+              title="Languages"
+              items={languages}
+              icons={techIcons}
+            />
+            <TechCategory
+              title="Frameworks & Libraries"
+              items={frameworksAndLibraries}
+              icons={techIcons}
+            />
+            <TechCategory
+              title="Infrastructure & Environments"
+              items={infrastructuresAndEnvironments}
+              icons={techIcons}
+            />
+            <TechCategory
+              title="Tooling & Workflows"
+              items={toolingAndWorkflows}
+              icons={techIcons}
+            />
           </div>
         </section>
-        <section
-          id="books"
-          className="mb-10 w-full border border-gray-300 p-3 pb-10 shadow-lg"
-        >
-          <h3 className="mb-3 w-full text-center font-bold text-lg sm:mb-5 sm:text-2xl md:text-4xl lg:text-5xl">
+
+        {/* Books */}
+        <section id="books">
+          <h2 className="font-bold text-2xl text-slate-900 sm:text-3xl dark:text-white">
             Books
-          </h3>
-          <p className="mb-5 w-full font-light text-sm sm:text-base md:text-lg lg:text-xl">
+          </h2>
+          <div className="mt-2 h-px w-16 bg-slate-900 dark:bg-white" />
+          <p className="mt-6 text-base text-slate-600 leading-relaxed dark:text-slate-400">
             読書にハマったのは大学に入学してから。元々知的好奇心みたいなものは比較的高かったので気になった本を片っ端から買っては読みを繰り返していたら、4年で大体
-            <span className="font-bold">350冊</span>
+            <span className="font-bold text-slate-900 dark:text-white">
+              350冊
+            </span>
             くらいの本を読んでいました。特によく読むジャンルとしては、
-            <span className="font-bold">経営学</span>や{" "}
-            <span className="font-bold">
-              {" "}
+            <span className="font-bold text-slate-900 dark:text-white">
+              経営学
+            </span>
+            や{" "}
+            <span className="font-bold text-slate-900 dark:text-white">
               歴史、思想・哲学、コンピュータサイエンス
             </span>
-            など。新書が好きで、特に<span className="font-bold">岩波新書</span>
-            、や<span className="font-bold">講談社現代新書</span>
+            など。新書が好きで、特に
+            <span className="font-bold text-slate-900 dark:text-white">
+              岩波新書
+            </span>
+            、や
+            <span className="font-bold text-slate-900 dark:text-white">
+              講談社現代新書
+            </span>
             が個人的好きな出版レーベルです。{" "}
-            <Link to="/books" className="font-bold underline">
+            <Link
+              to="/books"
+              className="font-bold text-slate-900 underline dark:text-white"
+            >
               Libraryページ
             </Link>
             にこれまで読んだ書籍を本棚として置いており、本の感想や書評はBlogで公開しています。
           </p>
-          <div className="mx-auto w-full rounded-lg border border-gray-500 p-3 lg:max-w-[60%]">
-            <p className="test-sm mb-3 text-center font-bold sm:text-base md:text-lg lg:text-xl">
+          <div className="mt-8">
+            <p className="mb-4 font-bold text-lg text-slate-900 dark:text-white">
               おすすめの本ピックアップ
             </p>
-            <div className="mx-auto mb-5 grid w-full grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {favoriteBooksData.map((book) => (
                 <BookCard key={book.id} {...book} />
               ))}
             </div>
-            <Link
-              to="/books"
-              className="block text-center font-bold text-sm underline sm:text-base md:text-lg lg:text-xl"
-            >
-              Libraryページ
-            </Link>
+            <div className="mt-6 text-center">
+              <Link
+                to="/books"
+                className="inline-block rounded-lg bg-slate-900 px-5 py-2.5 font-medium text-sm text-white transition-colors hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              >
+                Library を見る
+              </Link>
+            </div>
           </div>
         </section>
       </div>
