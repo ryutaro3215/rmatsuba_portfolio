@@ -1,13 +1,12 @@
 import { type Book, BookGenres, type GenreSlug } from "@mysite/shared";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { bookCoverModules, createImagesByFilename } from "../app/importImages";
 import { genreTheme } from "../data/genreTheme";
 
 export const DetailBookCard = (data: Book) => {
   const coverUrl = createImagesByFilename(bookCoverModules)[data.cover];
-  const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-gray-200";
-  const genreTextColor = genreTheme[data.genre]?.textColor || "text-black";
-  const genreClass = `cursor-pointer ${genreBgColor} ${genreTextColor} text-sm sm:text-base md:text-xl lg:text-2xl border border-b rounded-full bg-blue-600 px-2 py-1 truncate text-left self-start w-fit max-w-full mb-2`;
+  const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-slate-200";
+  const genreTextColor = genreTheme[data.genre]?.textColor || "text-slate-900";
 
   const navigate = useNavigate();
   const genreSlug = (Object.keys(BookGenres) as GenreSlug[]).find(
@@ -22,34 +21,51 @@ export const DetailBookCard = (data: Book) => {
     }
   };
   return (
-    <article className="flex h-[100vh] w-full flex-col items-center gap-5 sm:flex-row">
-      <div className="h-[80vh] w-full sm:max-w-[50%]">
-        <img
-          src={coverUrl}
-          alt={`Cover of ${data.title}`}
-          className="mx-auto block h-full w-full object-contain"
-        />
+    <article className="flex w-full flex-col gap-8 sm:flex-row sm:items-start">
+      <div className="mx-auto w-full shrink-0 sm:w-1/3">
+        <div className="overflow-hidden rounded-xl bg-slate-50 p-4 dark:bg-slate-800">
+          <img
+            src={coverUrl}
+            alt={`Cover of ${data.title}`}
+            className="mx-auto block w-full object-contain"
+          />
+        </div>
       </div>
-      <div className="flex w-full flex-col gap-1 p-2 text-left sm:border-black sm:border-t sm:border-l">
-        <h3 className="mb-3 w-full font-bold text-xl sm:text-2xl md:text-4xl lg:text-6xl">
+      <div className="flex w-full flex-col gap-4 sm:w-2/3">
+        <Link
+          to="/books"
+          className="text-slate-500 text-sm transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+        >
+          &larr; Library に戻る
+        </Link>
+        <h1 className="font-bold font-source-serif-4 text-2xl text-slate-900 tracking-tight sm:text-3xl md:text-4xl dark:text-white">
           {data.title}
-        </h3>
-        <p className="mb-2 w-full text-left text-base sm:text-xl md:text-2xl lg:text-4xl">
+        </h1>
+        <p className="text-lg text-slate-600 dark:text-slate-400">
           {data.author}
         </p>
-        <button type="button" className={genreClass} onClick={handleGenreClick}>
+        <button
+          type="button"
+          className={`${genreBgColor} ${genreTextColor} w-fit max-w-full truncate rounded-full px-3 py-1 text-sm`}
+          onClick={handleGenreClick}
+        >
           # {data.genre}
         </button>
-        <ul className="flex list-none flex-wrap gap-1 border-black border-t px-2 py-2">
-          {data.tags?.map((tag) => (
-            <li
-              key={data.id}
-              className="w-fit max-w-full truncate rounded-full border border-b px-2 py-1 text-xs md:text-base lg:text-lg"
-            >
-              # {tag}
-            </li>
-          ))}
-        </ul>
+        {data.tags && data.tags.length > 0 && (
+          <>
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700" />
+            <div className="flex flex-wrap gap-1.5">
+              {data.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-slate-100 px-2.5 py-0.5 text-slate-600 text-xs dark:bg-slate-800 dark:text-slate-400"
+                >
+                  # {tag}
+                </span>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </article>
   );
