@@ -4,6 +4,7 @@ import { type JSX, useEffect, useState } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import rehypeKatex from "rehype-katex";
 import rehypeStarryNight from "rehype-starry-night";
+import remarkCodeTitles from "remark-flexible-code-titles";
 import remarkGfm from "remark-gfm";
 import { remarkAlert } from "remark-github-blockquote-alert";
 import remarkMath from "remark-math";
@@ -19,6 +20,11 @@ const processor = unified()
   .use(remarkGfm)
   .use(remarkMath)
   .use(remarkAlert)
+  .use(remarkCodeTitles, {
+    titleTagName: "span",
+    containerClassName: "remark-code-container",
+    titleClassName: "remark-code-title",
+  })
   .use(remarkRehype)
   .use(rehypeKatex)
   .use(rehypeStarryNight);

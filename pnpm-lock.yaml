@@ -68,6 +68,9 @@ importers:
       remark-code-titles:
         specifier: ^0.1.2
         version: 0.1.2
+      remark-flexible-code-titles:
+        specifier: ^1.3.3
+        version: 1.3.3(unified@11.0.5)
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
@@ -3326,6 +3329,16 @@ packages:
     resolution: {integrity: sha512-KsHQbaI4FX8Ozxqk7YErxwmBiveUqloKuVqyPG2YPLHojpgomodWgRfG4B+bOtmn/5bfJ8khw4rR0lvgVFl2Uw==}
     dependencies:
       unist-util-visit: 1.4.1
+    dev: false
+
+  /remark-flexible-code-titles@1.3.3(unified@11.0.5):
+    resolution: {integrity: sha512-eOSw4C4hjRIkEiLlo0r1gx9nbb8ie/4lRj3sy0dadsS6dLGrWk41VdjArfU28QI3PgDyc0vCI2VbixbX0eBaLg==}
+    peerDependencies:
+      unified: ^11
+    dependencies:
+      '@types/mdast': 4.0.4
+      unified: 11.0.5
+      unist-util-visit: 5.1.0
     dev: false
 
   /remark-gfm@4.0.1:
