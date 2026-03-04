@@ -61,6 +61,29 @@
   border-color: var(--borderColor-default, #30363d);
 }
 
+.remark-code-title {
+  padding: 0.4rem 1rem;
+  font-size: 0.875rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--fgColor-default, #1f2328);
+  background-color: var(--bgColor-muted, #f6f8fa);
+  border: 1px solid var(--borderColor-default, #d1d9e0);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+
+.remark-code-title + pre {
+  margin-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.dark .remark-code-title {
+  color: var(--fgColor-default, #e6edf3);
+  background-color: var(--bgColor-muted, #161b22);
+  border-color: var(--borderColor-default, #30363d);
+}
+
 @theme {
   --font-source-serif-4: "Source Serif 4", serif;
   --animate-fade-up: fade-up 700ms ease-out both;
