@@ -7,6 +7,37 @@
   color: inherit;
 }
 
+@layer utilities {
+  .custom-scrollbar {
+    /* Firefox 用 */
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 transparent;
+  }
+  /* Chrome, Edge, Safari 用 */
+  .custom-scrollbar::-webkit-scrollbar {
+    height: 4px; /* 横スクロールバーの高さ */
+    width: 4px; /* 縦スクロールバーの幅 */
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent; /* トラック（背景）は透明に */
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1; /* スクロールバーの色（Lightモード） */
+    border-radius: 20px; /* 丸みを持たせる */
+    transition: background-color 0.2s;
+  }
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: #94a3b8; /* ホバー時に少し濃くする */
+  }
+  /* ダークモード用の調整 */
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #334155;
+  }
+  .dark .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: #475569;
+  }
+}
+
 @theme {
   --font-source-serif-4: "Source Serif 4", serif;
   --animate-fade-up: fade-up 700ms ease-out both;
