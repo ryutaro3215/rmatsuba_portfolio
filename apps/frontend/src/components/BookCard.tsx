@@ -27,6 +27,7 @@ export const BookCard = (data: Book) => {
           <img
             src={coverUrl}
             alt={`Cover of ${data.title}`}
+            loading="lazy"
             className="mx-auto block transition-transform duration-200 group-hover:scale-105"
           />
         </div>

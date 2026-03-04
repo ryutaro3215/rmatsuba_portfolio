@@ -1,155 +1,175 @@
-import {
-  BookGenreSchema,
-  BookGenres,
-  type GenreOption,
-  type GenreSlug,
-} from "@mysite/shared";
-import { useEffect, useState } from "react";
+import { BookGenreSchema, BookGenres, type GenreSlug } from "@mysite/shared";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import type { StylesConfig } from "react-select";
-import Selector from "react-select";
 import { BookCard } from "../components/BookCard";
 import { books } from "../data/books";
-import { useTheme } from "../hooks/useTheme";
 
 export const Library = () => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-
-  const genreOptions: GenreOption[] = BookGenreSchema.options.map((genre) => ({
-    value: genre,
-    label: genre,
-  }));
-
   const [searchParams, setSearchParams] = useSearchParams();
+  const selectedGenreSlugs = searchParams.getAll("genre");
 
-  const [selectedOptions, setSelectedOptions] = useState<GenreOption[]>(() => {
-    const slugsFromParams = searchParams.getAll("genre");
-    return slugsFromParams
-      .map((slug) => {
-        const label = BookGenres[slug as GenreSlug];
-        return label ? { value: label, label: label } : null;
-      })
-      .filter((opt) => opt !== null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+
+  const genreList = BookGenreSchema.options.map((label) => {
+    const slug = (Object.keys(BookGenres) as GenreSlug[]).find(
+      (key) => BookGenres[key] === label,
+    );
+    return { label, slug };
   });
 
-  useEffect(() => {
-    const slugsFromParams = searchParams.getAll("genre");
-    const restoredOptions = slugsFromParams
-      .map((slug) => {
-        const label = BookGenres[slug as GenreSlug];
-        return label ? { value: label, label: label } : null;
-      })
-      .filter((opt) => opt !== null);
-    if (JSON.stringify(restoredOptions) !== JSON.stringify(selectedOptions)) {
-      setSelectedOptions(restoredOptions as GenreOption[]);
+  // 修正3: useCallback で関数をメモ化
+  const checkScroll = useCallback(() => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
     }
-  }, [searchParams, selectedOptions]);
+  }, []);
 
-  const handleChange = (newValue: readonly GenreOption[]) => {
-    const arrayValue = Array.from(newValue);
-    setSelectedOptions(arrayValue);
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) {
+      checkScroll();
+      el.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
+      return () => {
+        el.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      };
+    }
+  }, [checkScroll]);
 
-    const newParams = new URLSearchParams();
-    arrayValue.forEach((opt) => {
-      const slug = (Object.keys(BookGenres) as GenreSlug[]).find(
-        (key) => BookGenres[key] === opt.value,
-      );
-      if (slug) {
-        newParams.append("genre", slug);
-      }
-    });
-    setSearchParams(newParams, {
-      preventScrollReset: true,
-      replace: true,
-    });
+  const scrollBy = (offset: number) => {
+    scrollRef.current?.scrollBy({ left: offset, behavior: "smooth" });
   };
 
-  const selectedGenres = selectedOptions.map((opt) => opt.value);
+  const toggleGenre = (slug: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    const currentGenres = newParams.getAll("genre");
+
+    if (currentGenres.includes(slug)) {
+      const filtered = currentGenres.filter((s) => s !== slug);
+      newParams.delete("genre");
+      // 修正1: 波括弧を追加して値を返さないようにする
+      filtered.forEach((s) => {
+        newParams.append("genre", s);
+      });
+    } else {
+      newParams.append("genre", slug);
+    }
+    setSearchParams(newParams, { preventScrollReset: true, replace: true });
+  };
+
   const filteredBooks =
-    selectedGenres.length === 0
+    selectedGenreSlugs.length === 0
       ? books
-      : books.filter((book) => selectedGenres.includes(book.genre));
-
-  const selectStyles: StylesConfig<GenreOption, true> = {
-    control: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#0f172a" : base.backgroundColor,
-      borderColor: isDark ? "#334155" : "#e2e8f0",
-      borderRadius: "0.75rem",
-      "&:hover": {
-        borderColor: isDark ? "#475569" : "#cbd5e1",
-      },
-    }),
-    menu: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#1e293b" : base.backgroundColor,
-      borderRadius: "0.75rem",
-      overflow: "hidden",
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isFocused
-        ? isDark
-          ? "#334155"
-          : "#f1f5f9"
-        : isDark
-          ? "#1e293b"
-          : base.backgroundColor,
-      color: isDark ? "#e2e8f0" : base.color,
-    }),
-    multiValue: (base) => ({
-      ...base,
-      backgroundColor: isDark ? "#334155" : "#f1f5f9",
-      borderRadius: "9999px",
-    }),
-    multiValueLabel: (base) => ({
-      ...base,
-      color: isDark ? "#e2e8f0" : "#475569",
-    }),
-    multiValueRemove: (base) => ({
-      ...base,
-      color: isDark ? "#94a3b8" : "#94a3b8",
-      borderRadius: "0 9999px 9999px 0",
-      ":hover": {
-        backgroundColor: isDark ? "#475569" : "#e2e8f0",
-        color: isDark ? "#e2e8f0" : "#334155",
-      },
-    }),
-    input: (base) => ({
-      ...base,
-      color: isDark ? "#e2e8f0" : base.color,
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: isDark ? "#94a3b8" : "#94a3b8",
-    }),
-  };
+      : books.filter((book) => {
+          return selectedGenreSlugs.some(
+            (slug) => BookGenres[slug as GenreSlug] === book.genre,
+          );
+        });
 
   return (
     <div className="mx-auto w-full">
-      {/* Page header */}
-      <section className="mx-auto max-w-7xl px-6 pt-32 pb-16 sm:pt-40 sm:pb-20">
+      <section className="mx-auto max-w-7xl px-6 pt-32 pb-8 sm:pt-40">
         <h1 className="font-bold font-source-serif-4 text-4xl text-slate-900 tracking-tight sm:text-5xl lg:text-6xl dark:text-white">
           Library
         </h1>
         <p className="mt-3 text-base text-slate-600 leading-relaxed dark:text-slate-400">
           読んだ本の記録
         </p>
-        <div className="mt-6 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700" />
       </section>
 
-      <div className="mx-auto max-w-7xl px-6" id="genre-selector">
-        <Selector
-          options={genreOptions}
-          isMulti={true}
-          placeholder="ジャンルで絞り込む"
-          value={selectedOptions}
-          onChange={handleChange}
-          styles={selectStyles}
-        />
+      <div className="sticky top-[64px] z-10 bg-white/80 py-4 backdrop-blur-md dark:bg-slate-900/80">
+        <div className="group relative mx-auto max-w-7xl px-6">
+          <div
+            className={`pointer-events-none absolute top-0 bottom-0 left-6 z-20 flex items-center transition-opacity duration-300 ${showLeftArrow ? "opacity-100" : "opacity-0"}`}
+          >
+            <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent dark:from-slate-900" />
+            <button
+              type="button"
+              onClick={() => scrollBy(-200)}
+              className="pointer-events-auto relative ml-1 rounded-full border border-slate-200 bg-white/90 p-1 shadow-md transition-transform hover:scale-110 dark:border-slate-700 dark:bg-slate-800"
+              aria-label="Scroll left"
+            >
+              {/* 修正2: title を追加 */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-slate-600 dark:text-slate-400"
+              >
+                <title>Previous</title>
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+          </div>
+
+          <div
+            className={`pointer-events-none absolute top-0 right-6 bottom-0 z-20 flex items-center transition-opacity duration-300 ${showRightArrow ? "opacity-100" : "opacity-0"}`}
+          >
+            <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent dark:from-slate-900" />
+            <button
+              type="button"
+              onClick={() => scrollBy(200)}
+              className="pointer-events-auto relative mr-1 rounded-full border border-slate-200 bg-white/90 p-1 shadow-md transition-transform hover:scale-110 dark:border-slate-700 dark:bg-slate-800"
+              aria-label="Scroll right"
+            >
+              {/* 修正2: title を追加 */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-slate-600 dark:text-slate-400"
+              >
+                <title>Next</title>
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
+          </div>
+
+          <div
+            ref={scrollRef}
+            className="no-scrollbar custom-scrollbar flex flex-nowrap gap-2 overflow-x-auto scroll-smooth pb-2"
+          >
+            {genreList.map(({ label, slug }) => {
+              if (!slug) return null;
+              const isActive = selectedGenreSlugs.includes(slug);
+
+              return (
+                <button
+                  key={slug}
+                  type="button"
+                  onClick={() => toggleGenre(slug)}
+                  className={`whitespace-nowrap rounded-full px-4 py-1.5 font-medium text-sm transition-all ${
+                    isActive
+                      ? "bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-900"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
-      <section className="mx-auto mt-6 mb-20 grid max-w-7xl grid-cols-2 gap-3 px-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+
+      <section className="mx-auto mt-8 mb-20 grid max-w-7xl grid-cols-2 gap-3 px-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {filteredBooks.map((book) => (
           <BookCard key={book.id} {...book} />
         ))}
