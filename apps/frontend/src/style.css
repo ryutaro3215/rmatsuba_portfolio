@@ -7,7 +7,6 @@
   color: inherit;
 }
 
-
 @layer utilities {
   .custom-scrollbar {
     /* Firefox 用 */
@@ -37,6 +36,7 @@
   .dark .custom-scrollbar:hover::-webkit-scrollbar-thumb {
     background-color: #475569;
   }
+}
 
 .remark-code-title {
   padding: 0.4rem 1rem;
