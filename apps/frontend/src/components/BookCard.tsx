@@ -1,10 +1,11 @@
 import { type Book, BookGenres, type GenreSlug } from "@mysite/shared";
 import { navigate } from "vike/client/router";
-import { bookCoverModules, createImagesByFilename } from "../app/importImages";
+import { getBookCoverUrl } from "../app/importImages";
 import { genreTheme } from "../data/genreTheme";
 
 export const BookCard = (data: Book) => {
-  const coverUrl = createImagesByFilename(bookCoverModules)[data.cover];
+  const coverUrl = getBookCoverUrl(data.cover);
+
   const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-slate-200";
   const genreTextColor = genreTheme[data.genre]?.textColor || "text-slate-900";
 
@@ -21,6 +22,7 @@ export const BookCard = (data: Book) => {
       });
     }
   };
+
   return (
     <a href={`/books/${data.id}`} className="group h-full">
       <article className="flex h-full flex-col rounded-xl border border-slate-200 bg-white transition-all duration-200 hover:border-slate-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
@@ -29,7 +31,9 @@ export const BookCard = (data: Book) => {
             src={coverUrl}
             alt={`Cover of ${data.title}`}
             loading="lazy"
-            className="mx-auto block transition-transform duration-200 group-hover:scale-105"
+            // 画像サイズを一定に保つために aspect-ratio などを指定しておくと、
+            // public 移行後のレイアウトシフトを防げます
+            className="mx-auto block transition-transform duration-200 group-hover:scale-105 aspect-[2/3] object-cover"
           />
         </div>
         <div className="flex flex-1 flex-col gap-1.5 p-3">
@@ -41,7 +45,7 @@ export const BookCard = (data: Book) => {
           </p>
           <button
             type="button"
-            className={`${genreBgColor} ${genreTextColor} mt-auto w-fit max-w-full truncate rounded-full px-2 py-0.5 text-xs`}
+            className={`${genreBgColor} ${genreTextColor} mt-auto w-fit max-w-full truncate rounded-full px-2 py-0.5 text-xs cursor-pointer hover:brightness-95 transition-all`}
             onClick={handleGenreClick}
           >
             # {data.genre}

@@ -1,23 +1,11 @@
 import type { Book, Tech } from "@mysite/shared";
-import {
-  createImagesByFilename,
-  techIconModules,
-} from "../../app/importImages";
-import ProfilePic from "../../assets/favicon.png";
+import { getTechIconUrl } from "../../app/importImages";
 import { BookCard } from "../../components/BookCard";
 import { books, favoriteBooks } from "../../data/books";
 import { techs } from "../../data/tech";
 import "../../style.css";
 
-const TechCategory = ({
-  title,
-  items,
-  icons,
-}: {
-  title: string;
-  items: Tech[];
-  icons: Record<string, string>;
-}) => (
+const TechCategory = ({ title, items }: { title: string; items: Tech[] }) => (
   <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
     <p className="mb-3 font-semibold text-slate-900 text-sm dark:text-white">
       {title}
@@ -32,9 +20,10 @@ const TechCategory = ({
           className="rounded-lg p-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <img
-            src={icons[item.cover]}
+            src={getTechIconUrl(item.cover)}
             alt={item.name}
             className="h-8 w-8 object-contain sm:h-10 sm:w-10"
+            loading="lazy"
           />
         </a>
       ))}
@@ -43,7 +32,6 @@ const TechCategory = ({
 );
 
 const About = () => {
-  const techIcons = createImagesByFilename(techIconModules);
   const languages: Tech[] = techs.filter(
     (tech) => tech.category === "Languages",
   );
@@ -59,6 +47,7 @@ const About = () => {
   const favoriteBooksData: Book[] = books.filter((book) =>
     favoriteBooks.includes(book.id),
   );
+
   return (
     <div className="mx-auto w-full">
       {/* Page header */}
@@ -80,7 +69,7 @@ const About = () => {
               <div className="mx-auto w-40 sm:w-48 md:w-56">
                 <img
                   className="block w-full rounded-full border border-slate-200 object-contain dark:border-slate-700"
-                  src={ProfilePic}
+                  src="/favicon.png"
                   alt="profile"
                 />
               </div>
@@ -147,25 +136,18 @@ const About = () => {
             扱った技術に関するブログ記事も投稿しています。
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <TechCategory
-              title="Languages"
-              items={languages}
-              icons={techIcons}
-            />
+            <TechCategory title="Languages" items={languages} />
             <TechCategory
               title="Frameworks & Libraries"
               items={frameworksAndLibraries}
-              icons={techIcons}
             />
             <TechCategory
               title="Infrastructure & Environments"
               items={infrastructuresAndEnvironments}
-              icons={techIcons}
             />
             <TechCategory
               title="Tooling & Workflows"
               items={toolingAndWorkflows}
-              icons={techIcons}
             />
           </div>
         </section>

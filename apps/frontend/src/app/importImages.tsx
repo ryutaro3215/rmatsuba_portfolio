@@ -1,23 +1,9 @@
-export const bookCoverModules = import.meta.glob(
-  "../assets/book_cover/*.{jpg,png,jpeg,svg}",
-  { eager: true, as: "url" },
-);
+export function getBookCoverUrl(filename: string | undefined): string {
+  if (!filename) return "/fallback-cover.png"; // 画像がない場合のフォールバック（任意）
+  return `/book_cover/${filename}`;
+}
 
-export const techIconModules = import.meta.glob(
-  "../assets/tech/*.{jpg,png,jpeg,svg}",
-  { eager: true, as: "url" },
-);
-
-export const createImagesByFilename = (
-  modules: Record<string, string>,
-): Record<string, string> => {
-  return Object.fromEntries(
-    Object.entries(modules).map(([path, url]) => {
-      const filename = path.split("/").pop();
-      if (!filename) {
-        throw new Error(`Filename could not be determined from path: ${path}`);
-      }
-      return [filename, url];
-    }),
-  );
-};
+export function getTechIconUrl(filename: string | undefined): string {
+  if (!filename) return "";
+  return `/tech/${filename}`;
+}

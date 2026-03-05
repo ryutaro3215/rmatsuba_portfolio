@@ -1,10 +1,11 @@
 import { type Book, BookGenres, type GenreSlug } from "@mysite/shared";
 import { navigate } from "vike/client/router";
-import { bookCoverModules, createImagesByFilename } from "../app/importImages";
+import { getBookCoverUrl } from "../app/importImages";
 import { genreTheme } from "../data/genreTheme";
 
 const DetailBookCard = (data: Book) => {
-  const coverUrl = createImagesByFilename(bookCoverModules)[data.cover];
+  const coverUrl = getBookCoverUrl(data.cover);
+
   const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-slate-200";
   const genreTextColor = genreTheme[data.genre]?.textColor || "text-slate-900";
 
@@ -29,7 +30,9 @@ const DetailBookCard = (data: Book) => {
           <img
             src={coverUrl}
             alt={`Cover of ${data.title}`}
-            className="mx-auto block w-full object-contain"
+            // 3. 詳細ページなので loading="eager" か、指定なしでOK
+            // aspect-ratio を指定しておくと読み込み時のガタつきを防げます
+            className="mx-auto block w-full object-contain aspect-[2/3]"
           />
         </div>
       </div>
