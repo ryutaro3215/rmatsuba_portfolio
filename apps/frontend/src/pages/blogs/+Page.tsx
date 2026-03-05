@@ -1,8 +1,9 @@
 import type { ParsedPost } from "@mysite/shared";
-import { importBlogData } from "../app/importBlogData";
-import { PostCard } from "../components/PostCard";
+import { importBlogData } from "../../app/importBlogData";
+import { PostCard } from "../../components/PostCard";
+import "../../style.css";
 
-export const Blog = () => {
+const Blog = () => {
   const posts: ParsedPost[] = importBlogData();
   const descendingPosts = posts.sort((a, b) => {
     const dateA = new Date(a.frontMatter.created_at);
@@ -32,3 +33,5 @@ export const Blog = () => {
     </div>
   );
 };
+
+export default Blog;

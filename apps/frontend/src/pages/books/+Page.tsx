@@ -1,12 +1,15 @@
 import { BookGenreSchema, BookGenres, type GenreSlug } from "@mysite/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router";
-import { BookCard } from "../components/BookCard";
-import { books } from "../data/books";
+import { navigate } from "vike/client/router";
+import { usePageContext } from "vike-react/usePageContext";
+import { BookCard } from "../../components/BookCard";
+import { books } from "../../data/books";
+import "../../style.css";
 
-export const Library = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const selectedGenreSlugs = searchParams.getAll("genre");
+const Library = () => {
+  const { urlParsed } = usePageContext();
+  const selectedGenreSlugs = urlParsed.searchAll.genre || [];
+  // const currentSearch = urlParsed.search;
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -46,20 +49,25 @@ export const Library = () => {
   };
 
   const toggleGenre = (slug: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    const currentGenres = newParams.getAll("genre");
+    let newGenres = [...selectedGenreSlugs];
 
-    if (currentGenres.includes(slug)) {
-      const filtered = currentGenres.filter((s) => s !== slug);
-      newParams.delete("genre");
-      // 修正1: 波括弧を追加して値を返さないようにする
-      filtered.forEach((s) => {
-        newParams.append("genre", s);
-      });
+    if (newGenres.includes(slug)) {
+      newGenres = newGenres.filter((g) => g !== slug);
     } else {
-      newParams.append("genre", slug);
+      newGenres.push(slug);
     }
-    setSearchParams(newParams, { preventScrollReset: true, replace: true });
+
+    const newParams = new URLSearchParams();
+    for (const genre of newGenres) {
+      newParams.append("genre", genre);
+    }
+
+    const queryString = newParams.toString();
+    const newUrl = queryString ? `?${queryString}` : urlParsed.pathname;
+    navigate(newUrl, {
+      keepScrollPosition: true,
+      overwriteLastHistoryEntry: true,
+    });
   };
 
   const filteredBooks =
@@ -177,3 +185,5 @@ export const Library = () => {
     </div>
   );
 };
+
+export default Library;

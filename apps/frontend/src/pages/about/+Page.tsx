@@ -1,20 +1,11 @@
 import type { Book, Tech } from "@mysite/shared";
-import { Link } from "react-router";
-import { createImagesByFilename, techIconModules } from "../app/importImages";
-import ProfilePic from "../assets/favicon.png";
-import { BookCard } from "../components/BookCard";
-import { books, favoriteBooks } from "../data/books";
-import { techs } from "../data/tech";
+import { getTechIconUrl } from "../../app/importImages";
+import { BookCard } from "../../components/BookCard";
+import { books, favoriteBooks } from "../../data/books";
+import { techs } from "../../data/tech";
+import "../../style.css";
 
-const TechCategory = ({
-  title,
-  items,
-  icons,
-}: {
-  title: string;
-  items: Tech[];
-  icons: Record<string, string>;
-}) => (
+const TechCategory = ({ title, items }: { title: string; items: Tech[] }) => (
   <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
     <p className="mb-3 font-semibold text-slate-900 text-sm dark:text-white">
       {title}
@@ -29,9 +20,10 @@ const TechCategory = ({
           className="rounded-lg p-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <img
-            src={icons[item.cover]}
+            src={getTechIconUrl(item.cover)}
             alt={item.name}
             className="h-8 w-8 object-contain sm:h-10 sm:w-10"
+            loading="lazy"
           />
         </a>
       ))}
@@ -39,8 +31,7 @@ const TechCategory = ({
   </div>
 );
 
-export const About = () => {
-  const techIcons = createImagesByFilename(techIconModules);
+const About = () => {
   const languages: Tech[] = techs.filter(
     (tech) => tech.category === "Languages",
   );
@@ -56,6 +47,7 @@ export const About = () => {
   const favoriteBooksData: Book[] = books.filter((book) =>
     favoriteBooks.includes(book.id),
   );
+
   return (
     <div className="mx-auto w-full">
       {/* Page header */}
@@ -77,7 +69,7 @@ export const About = () => {
               <div className="mx-auto w-40 sm:w-48 md:w-56">
                 <img
                   className="block w-full rounded-full border border-slate-200 object-contain dark:border-slate-700"
-                  src={ProfilePic}
+                  src="/favicon.png"
                   alt="profile"
                 />
               </div>
@@ -144,25 +136,18 @@ export const About = () => {
             扱った技術に関するブログ記事も投稿しています。
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <TechCategory
-              title="Languages"
-              items={languages}
-              icons={techIcons}
-            />
+            <TechCategory title="Languages" items={languages} />
             <TechCategory
               title="Frameworks & Libraries"
               items={frameworksAndLibraries}
-              icons={techIcons}
             />
             <TechCategory
               title="Infrastructure & Environments"
               items={infrastructuresAndEnvironments}
-              icons={techIcons}
             />
             <TechCategory
               title="Tooling & Workflows"
               items={toolingAndWorkflows}
-              icons={techIcons}
             />
           </div>
         </section>
@@ -195,12 +180,12 @@ export const About = () => {
               講談社現代新書
             </span>
             が個人的好きな出版レーベルです。{" "}
-            <Link
-              to="/books"
+            <a
+              href="/books"
               className="font-bold text-slate-900 underline dark:text-white"
             >
               Libraryページ
-            </Link>
+            </a>
             にこれまで読んだ書籍を本棚として置いており、本の感想や書評はBlogで公開しています。
           </p>
           <div className="mt-8">
@@ -213,12 +198,12 @@ export const About = () => {
               ))}
             </div>
             <div className="mt-6 text-center">
-              <Link
-                to="/books"
+              <a
+                href="/books"
                 className="inline-block rounded-lg bg-slate-900 px-5 py-2.5 font-medium text-sm text-white transition-colors hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
               >
                 Library を見る
-              </Link>
+              </a>
             </div>
           </div>
         </section>
@@ -226,3 +211,5 @@ export const About = () => {
     </div>
   );
 };
+
+export default About;

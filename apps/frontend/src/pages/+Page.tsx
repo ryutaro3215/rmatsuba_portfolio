@@ -1,8 +1,8 @@
-import { Link } from "react-router";
 import coding from "../assets/42Tokyo.png";
 import books from "../assets/books.png";
 import favicon from "../assets/favicon.png";
 import management from "../assets/management.png";
+import "../style.css";
 
 const linkCards = [
   {
@@ -31,7 +31,7 @@ const linkCards = [
   },
 ];
 
-export const Home = () => {
+const Home = () => {
   return (
     <div className="mx-auto w-full">
       {/* Hero */}
@@ -91,7 +91,7 @@ export const Home = () => {
       <section className="mx-auto max-w-7xl px-6 pb-20">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {linkCards.map((card) => (
-            <Link to={card.to} key={card.to} className="group">
+            <a href={card.to} key={card.to} className="group">
               <article className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition-all duration-200 hover:border-slate-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
                 <div className="flex items-center justify-center overflow-hidden bg-slate-50 p-6 dark:bg-slate-800">
                   <img
@@ -109,10 +109,12 @@ export const Home = () => {
                   </p>
                 </div>
               </article>
-            </Link>
+            </a>
           ))}
         </div>
       </section>
     </div>
   );
 };
+
+export default Home;

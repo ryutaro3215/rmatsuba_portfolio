@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
 import { IoMdClose, IoMdMenu } from "react-icons/io";
-import { Link, NavLink } from "react-router";
-import { navItems } from "../app/router";
+import { usePageContext } from "vike-react/usePageContext";
 import { ThemeToggle } from "./ThemeToggle";
+import "../style.css";
+
+export const navItems = [
+  { to: "/", label: "Home" },
+  { to: "/about", label: "About" },
+  { to: "/blogs", label: "Blog" },
+  { to: "/books", label: "Library" },
+];
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const pageContext = usePageContext();
+  const currentPath = pageContext.urlParsed.pathname;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -27,6 +37,13 @@ export function Header() {
     };
   }, [open]);
 
+  const getIsActive = (to: string) => {
+    if (to === "/") {
+      return currentPath === "/";
+    }
+    return currentPath.startsWith(to);
+  };
+
   return (
     <>
       <header
@@ -39,34 +56,34 @@ export function Header() {
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           {/* Logo */}
-          <Link to="/" className="group relative flex items-center gap-2">
+          <a href="/" className="group relative flex items-center gap-2">
             <span className="font-bold font-source-serif-4 text-slate-900 text-xl tracking-tight transition-colors group-hover:text-slate-600 sm:text-2xl dark:text-white dark:group-hover:text-slate-300">
               R.Matsuba
             </span>
             <span className="hidden font-light font-source-serif-4 text-slate-400 text-xl sm:inline dark:text-slate-500">
               Blog
             </span>
-          </Link>
+          </a>
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-1 sm:flex">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/"}
-                className={({ isActive }) =>
-                  [
+            {navItems.map((item) => {
+              const isActive = getIsActive(item.to);
+              return (
+                <a
+                  key={item.to}
+                  href={item.to}
+                  className={[
                     "nav-link relative rounded-lg px-4 py-2 font-medium text-sm tracking-wide transition-all duration-200",
                     isActive
                       ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white",
-                  ].join(" ")
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
+                  ].join(" ")}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
             <div className="ml-2 border-slate-200 border-l pl-2 dark:border-slate-700">
               <ThemeToggle />
             </div>
@@ -139,24 +156,24 @@ export function Header() {
 
           {/* Drawer nav */}
           <nav className="flex flex-col gap-1 px-4 pt-4">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/"}
-                onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  [
+            {navItems.map((item) => {
+              const isActive = getIsActive(item.to);
+              return (
+                <a
+                  key={item.to}
+                  href={item.to}
+                  onClick={() => setOpen(false)}
+                  className={[
                     "rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200",
                     isActive
                       ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white",
-                  ].join(" ")
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
+                  ].join(" ")}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
           </nav>
         </aside>
       </div>

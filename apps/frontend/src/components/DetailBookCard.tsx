@@ -1,14 +1,14 @@
 import { type Book, BookGenres, type GenreSlug } from "@mysite/shared";
-import { Link, useNavigate } from "react-router";
-import { bookCoverModules, createImagesByFilename } from "../app/importImages";
+import { navigate } from "vike/client/router";
+import { getBookCoverUrl } from "../app/importImages";
 import { genreTheme } from "../data/genreTheme";
 
-export const DetailBookCard = (data: Book) => {
-  const coverUrl = createImagesByFilename(bookCoverModules)[data.cover];
+const DetailBookCard = (data: Book) => {
+  const coverUrl = getBookCoverUrl(data.cover);
+
   const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-slate-200";
   const genreTextColor = genreTheme[data.genre]?.textColor || "text-slate-900";
 
-  const navigate = useNavigate();
   const genreSlug = (Object.keys(BookGenres) as GenreSlug[]).find(
     (key) => BookGenres[key] === data.genre,
   );
@@ -17,9 +17,12 @@ export const DetailBookCard = (data: Book) => {
     e.preventDefault();
     e.stopPropagation();
     if (genreSlug) {
-      navigate(`/books?genre=${genreSlug}#genre-selector`);
+      navigate(`/books?genre=${genreSlug}#genre-selector`, {
+        keepScrollPosition: true,
+      });
     }
   };
+
   return (
     <article className="flex w-full flex-col gap-8 sm:flex-row sm:items-start">
       <div className="mx-auto w-full shrink-0 sm:w-1/3">
@@ -27,17 +30,19 @@ export const DetailBookCard = (data: Book) => {
           <img
             src={coverUrl}
             alt={`Cover of ${data.title}`}
-            className="mx-auto block w-full object-contain"
+            // 3. 詳細ページなので loading="eager" か、指定なしでOK
+            // aspect-ratio を指定しておくと読み込み時のガタつきを防げます
+            className="mx-auto block aspect-[2/3] w-full object-contain"
           />
         </div>
       </div>
       <div className="flex w-full flex-col gap-4 sm:w-2/3">
-        <Link
-          to="/books"
+        <a
+          href="/books"
           className="text-slate-500 text-sm transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
         >
           &larr; Library に戻る
-        </Link>
+        </a>
         <h1 className="font-bold font-source-serif-4 text-2xl text-slate-900 tracking-tight sm:text-3xl md:text-4xl dark:text-white">
           {data.title}
         </h1>
@@ -46,7 +51,7 @@ export const DetailBookCard = (data: Book) => {
         </p>
         <button
           type="button"
-          className={`${genreBgColor} ${genreTextColor} w-fit max-w-full truncate rounded-full px-3 py-1 text-sm`}
+          className={`${genreBgColor} ${genreTextColor} w-fit max-w-full cursor-pointer truncate rounded-full px-3 py-1 text-sm transition-all duration-200 hover:shadow-sm hover:brightness-95 active:scale-95`}
           onClick={handleGenreClick}
         >
           # {data.genre}
@@ -70,3 +75,5 @@ export const DetailBookCard = (data: Book) => {
     </article>
   );
 };
+
+export default DetailBookCard;

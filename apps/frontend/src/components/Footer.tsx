@@ -1,9 +1,8 @@
 import { IoIosMail } from "react-icons/io";
-import { Link } from "react-router";
-import { navItems } from "../app/router";
 import profile from "../assets/favicon.png";
 import github from "../assets/github-original.svg";
 import note from "../assets/note.svg";
+import { navItems } from "./Header";
 
 export const Footer = () => {
   return (
@@ -19,13 +18,13 @@ export const Footer = () => {
           </h3>
           <nav className="flex flex-col gap-1">
             {navItems.map((item) => (
-              <Link
+              <a
                 key={item.to}
-                to={item.to}
+                href={item.to}
                 className="rounded-lg px-3 py-2 font-medium text-slate-600 text-sm transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
               >
                 {item.label}
-              </Link>
+              </a>
             ))}
           </nav>
         </section>
