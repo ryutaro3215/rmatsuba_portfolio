@@ -1,5 +1,5 @@
 import { type Book, BookGenres, type GenreSlug } from "@mysite/shared";
-import { Link, useNavigate } from "react-router";
+import { navigate } from "vike/client/router";
 import { bookCoverModules, createImagesByFilename } from "../app/importImages";
 import { genreTheme } from "../data/genreTheme";
 
@@ -8,7 +8,6 @@ export const BookCard = (data: Book) => {
   const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-slate-200";
   const genreTextColor = genreTheme[data.genre]?.textColor || "text-slate-900";
 
-  const navigate = useNavigate();
   const genreSlug = (Object.keys(BookGenres) as GenreSlug[]).find(
     (key) => BookGenres[key] === data.genre,
   );
@@ -17,11 +16,13 @@ export const BookCard = (data: Book) => {
     e.preventDefault();
     e.stopPropagation();
     if (genreSlug) {
-      navigate(`/books?genre=${genreSlug}#genre-selector`);
+      navigate(`/books?genre=${genreSlug}#genre-selector`, {
+        keepScrollPosition: true,
+      });
     }
   };
   return (
-    <Link to={`/books/${data.id}`} className="group h-full">
+    <a href={`/books/${data.id}`} className="group h-full">
       <article className="flex h-full flex-col rounded-xl border border-slate-200 bg-white transition-all duration-200 hover:border-slate-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
         <div className="overflow-hidden rounded-t-xl bg-slate-50 p-3 dark:bg-slate-800">
           <img
@@ -47,6 +48,6 @@ export const BookCard = (data: Book) => {
           </button>
         </div>
       </article>
-    </Link>
+    </a>
   );
 };

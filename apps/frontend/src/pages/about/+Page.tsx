@@ -1,10 +1,13 @@
 import type { Book, Tech } from "@mysite/shared";
-import { Link } from "react-router";
-import { createImagesByFilename, techIconModules } from "../app/importImages";
-import ProfilePic from "../assets/favicon.png";
-import { BookCard } from "../components/BookCard";
-import { books, favoriteBooks } from "../data/books";
-import { techs } from "../data/tech";
+import {
+  createImagesByFilename,
+  techIconModules,
+} from "../../app/importImages";
+import ProfilePic from "../../assets/favicon.png";
+import { BookCard } from "../../components/BookCard";
+import { books, favoriteBooks } from "../../data/books";
+import { techs } from "../../data/tech";
+import "../../style.css";
 
 const TechCategory = ({
   title,
@@ -39,7 +42,7 @@ const TechCategory = ({
   </div>
 );
 
-export const About = () => {
+const About = () => {
   const techIcons = createImagesByFilename(techIconModules);
   const languages: Tech[] = techs.filter(
     (tech) => tech.category === "Languages",
@@ -195,12 +198,12 @@ export const About = () => {
               講談社現代新書
             </span>
             が個人的好きな出版レーベルです。{" "}
-            <Link
-              to="/books"
+            <a
+              href="/books"
               className="font-bold text-slate-900 underline dark:text-white"
             >
               Libraryページ
-            </Link>
+            </a>
             にこれまで読んだ書籍を本棚として置いており、本の感想や書評はBlogで公開しています。
           </p>
           <div className="mt-8">
@@ -213,12 +216,12 @@ export const About = () => {
               ))}
             </div>
             <div className="mt-6 text-center">
-              <Link
-                to="/books"
+              <a
+                href="/books"
                 className="inline-block rounded-lg bg-slate-900 px-5 py-2.5 font-medium text-sm text-white transition-colors hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
               >
                 Library を見る
-              </Link>
+              </a>
             </div>
           </div>
         </section>
@@ -226,3 +229,5 @@ export const About = () => {
     </div>
   );
 };
+
+export default About;
