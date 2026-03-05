@@ -32,7 +32,7 @@ const DetailBookCard = (data: Book) => {
             alt={`Cover of ${data.title}`}
             // 3. 詳細ページなので loading="eager" か、指定なしでOK
             // aspect-ratio を指定しておくと読み込み時のガタつきを防げます
-            className="mx-auto block w-full object-contain aspect-[2/3]"
+            className="mx-auto block aspect-[2/3] w-full object-contain"
           />
         </div>
       </div>

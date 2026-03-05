@@ -33,7 +33,7 @@ export const BookCard = (data: Book) => {
             loading="lazy"
             // 画像サイズを一定に保つために aspect-ratio などを指定しておくと、
             // public 移行後のレイアウトシフトを防げます
-            className="mx-auto block transition-transform duration-200 group-hover:scale-105 aspect-[2/3] object-cover"
+            className="mx-auto block aspect-[2/3] object-cover transition-transform duration-200 group-hover:scale-105"
           />
         </div>
         <div className="flex flex-1 flex-col gap-1.5 p-3">
@@ -45,7 +45,7 @@ export const BookCard = (data: Book) => {
           </p>
           <button
             type="button"
-            className={`${genreBgColor} ${genreTextColor} mt-auto w-fit max-w-full truncate rounded-full px-2 py-0.5 text-xs cursor-pointer hover:brightness-95 transition-all`}
+            className={`${genreBgColor} ${genreTextColor} mt-auto w-fit max-w-full cursor-pointer truncate rounded-full px-2 py-0.5 text-xs transition-all hover:brightness-95`}
             onClick={handleGenreClick}
           >
             # {data.genre}
