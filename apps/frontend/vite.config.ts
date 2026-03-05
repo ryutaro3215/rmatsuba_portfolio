@@ -12,6 +12,12 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
-    vike({ prerender: true }),
+    vike({
+      // prerender: true をオブジェクト形式に拡張
+      prerender: {
+        // 同時に処理するページ数を5に制限（Parallel処理の抑制）
+        parallel: 5,
+      },
+    }),
   ],
 });
