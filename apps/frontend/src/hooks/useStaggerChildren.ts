@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface UseStaggerChildrenOptions {
   staggerDelay?: number;
@@ -13,13 +13,19 @@ export function useStaggerChildren<T extends HTMLElement = HTMLElement>({
   threshold = 0.1,
   rootMargin = "0px 0px -20px 0px",
 }: UseStaggerChildrenOptions = {}) {
-  const ref = useRef<T>(null);
+  const [container, setContainer] = useState<T | null>(null);
+  const ref = useCallback((node: T | null) => setContainer(node), []);
 
   useEffect(() => {
-    const container = ref.current;
     if (!container) return;
 
     const children = container.querySelectorAll<HTMLElement>(childSelector);
+
+    // 再実行時に前回の状態をリセット
+    for (const child of children) {
+      child.classList.remove("revealed");
+      child.style.animationDelay = "";
+    }
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       for (const child of children) {
@@ -47,7 +53,7 @@ export function useStaggerChildren<T extends HTMLElement = HTMLElement>({
 
     observer.observe(container);
     return () => observer.disconnect();
-  }, [staggerDelay, childSelector, threshold, rootMargin]);
+  }, [container, staggerDelay, childSelector, threshold, rootMargin]);
 
   return ref;
 }

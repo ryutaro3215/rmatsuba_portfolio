@@ -78,7 +78,10 @@ const Library = () => {
           );
         });
 
-  const gridRef = useStaggerChildren<HTMLElement>({ staggerDelay: 40 });
+  const genreKey = selectedGenreSlugs.join(",");
+  const gridRef = useStaggerChildren<HTMLElement>({
+    staggerDelay: 40,
+  });
 
   return (
     <div className="mx-auto w-full">
@@ -178,7 +181,7 @@ const Library = () => {
 
       <section
         ref={gridRef}
-        key={selectedGenreSlugs.join(",")}
+        key={genreKey}
         className="mx-auto mt-8 mb-20 grid max-w-7xl grid-cols-2 gap-3 px-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
       >
         {filteredBooks.map((book) => (
