@@ -61,15 +61,17 @@ export const DetailBlogCard = (data: ParsedPost) => {
   return (
     <article className="mx-auto flex max-w-3xl flex-col items-center gap-8 pt-24 pb-16">
       <div className="flex w-full flex-col items-center gap-3">
-        <p className="flex items-center justify-center text-6xl">{fm.emoji}</p>
-        <h1 className="font-bold font-source-serif-4 text-2xl text-slate-900 tracking-tight sm:text-3xl md:text-4xl lg:text-5xl dark:text-white">
+        <p className="reveal-scale revealed flex items-center justify-center text-6xl">
+          {fm.emoji}
+        </p>
+        <h1 className="reveal-up revealed reveal-delay-100 font-bold font-source-serif-4 text-2xl text-slate-900 tracking-tight sm:text-3xl md:text-4xl lg:text-5xl dark:text-white">
           {fm.title}
         </h1>
-        <div className="flex items-center gap-3 text-slate-500 text-sm dark:text-slate-400">
+        <div className="reveal-up revealed reveal-delay-200 flex items-center gap-3 text-slate-500 text-sm dark:text-slate-400">
           <p>{fm.created_at} に作成</p>
           {fm.updated_at !== fm.created_at && <p>{fm.updated_at} に更新</p>}
         </div>
-        <div className="flex flex-wrap justify-center gap-1.5">
+        <div className="reveal-up revealed reveal-delay-200 flex flex-wrap justify-center gap-1.5">
           {fm.tags.map((tag) => (
             <span
               key={tag}
@@ -79,10 +81,10 @@ export const DetailBlogCard = (data: ParsedPost) => {
             </span>
           ))}
         </div>
-        <div className="mt-2 h-px w-full bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700" />
+        <div className="reveal-divider revealed reveal-delay-300 mt-2 h-px w-full bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700" />
       </div>
       <div
-        className="markdown-body w-full max-w-none p-10"
+        className="reveal-up revealed reveal-delay-300 markdown-body w-full max-w-none p-10"
         data-color-mode={theme}
       >
         {markdownContent}

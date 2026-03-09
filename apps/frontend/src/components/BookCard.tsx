@@ -25,7 +25,7 @@ export const BookCard = (data: Book) => {
 
   return (
     <a href={`/books/${data.id}`} className="group h-full">
-      <article className="flex h-full flex-col rounded-xl border border-slate-200 bg-white transition-all duration-200 hover:border-slate-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
+      <article className="flex h-full flex-col rounded-xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
         <div className="overflow-hidden rounded-t-xl bg-slate-50 p-3 dark:bg-slate-800">
           <img
             src={coverUrl}

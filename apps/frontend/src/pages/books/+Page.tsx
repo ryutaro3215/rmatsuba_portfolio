@@ -4,12 +4,12 @@ import { navigate } from "vike/client/router";
 import { usePageContext } from "vike-react/usePageContext";
 import { BookCard } from "../../components/BookCard";
 import { books } from "../../data/books";
+import { useStaggerChildren } from "../../hooks/useStaggerChildren";
 import "../../style.css";
 
 const Library = () => {
   const { urlParsed } = usePageContext();
   const selectedGenreSlugs = urlParsed.searchAll.genre || [];
-  // const currentSearch = urlParsed.search;
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -22,7 +22,6 @@ const Library = () => {
     return { label, slug };
   });
 
-  // 修正3: useCallback で関数をメモ化
   const checkScroll = useCallback(() => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
@@ -79,13 +78,15 @@ const Library = () => {
           );
         });
 
+  const gridRef = useStaggerChildren<HTMLElement>({ staggerDelay: 40 });
+
   return (
     <div className="mx-auto w-full">
       <section className="mx-auto max-w-7xl px-6 pt-32 pb-8 sm:pt-40">
-        <h1 className="font-bold font-source-serif-4 text-4xl text-slate-900 tracking-tight sm:text-5xl lg:text-6xl dark:text-white">
+        <h1 className="reveal-up revealed font-bold font-source-serif-4 text-4xl text-slate-900 tracking-tight sm:text-5xl lg:text-6xl dark:text-white">
           Library
         </h1>
-        <p className="mt-3 text-base text-slate-600 leading-relaxed dark:text-slate-400">
+        <p className="reveal-up revealed reveal-delay-100 mt-3 text-base text-slate-600 leading-relaxed dark:text-slate-400">
           読んだ本の記録
         </p>
       </section>
@@ -102,7 +103,6 @@ const Library = () => {
               className="pointer-events-auto relative ml-1 rounded-full border border-slate-200 bg-white/90 p-1 shadow-md transition-transform hover:scale-110 dark:border-slate-700 dark:bg-slate-800"
               aria-label="Scroll left"
             >
-              {/* 修正2: title を追加 */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -131,7 +131,6 @@ const Library = () => {
               className="pointer-events-auto relative mr-1 rounded-full border border-slate-200 bg-white/90 p-1 shadow-md transition-transform hover:scale-110 dark:border-slate-700 dark:bg-slate-800"
               aria-label="Scroll right"
             >
-              {/* 修正2: title を追加 */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -163,7 +162,7 @@ const Library = () => {
                   key={slug}
                   type="button"
                   onClick={() => toggleGenre(slug)}
-                  className={`whitespace-nowrap rounded-full px-4 py-1.5 font-medium text-sm transition-all ${
+                  className={`whitespace-nowrap rounded-full px-4 py-1.5 font-medium text-sm transition-all active:scale-95 ${
                     isActive
                       ? "bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-900"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
@@ -177,9 +176,15 @@ const Library = () => {
         </div>
       </div>
 
-      <section className="mx-auto mt-8 mb-20 grid max-w-7xl grid-cols-2 gap-3 px-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <section
+        ref={gridRef}
+        key={selectedGenreSlugs.join(",")}
+        className="mx-auto mt-8 mb-20 grid max-w-7xl grid-cols-2 gap-3 px-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+      >
         {filteredBooks.map((book) => (
-          <BookCard key={book.id} {...book} />
+          <div key={book.id} className="stagger-child">
+            <BookCard {...book} />
+          </div>
         ))}
       </section>
     </div>

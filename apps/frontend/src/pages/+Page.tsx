@@ -2,6 +2,8 @@ import coding from "../assets/42Tokyo.png";
 import books from "../assets/books.png";
 import favicon from "../assets/favicon.png";
 import management from "../assets/management.png";
+import { useScrollReveal } from "../hooks/useScrollReveal";
+import { useStaggerChildren } from "../hooks/useStaggerChildren";
 import "../style.css";
 
 const linkCards = [
@@ -32,15 +34,18 @@ const linkCards = [
 ];
 
 const Home = () => {
+  const profileRef = useScrollReveal<HTMLElement>();
+  const cardsRef = useStaggerChildren<HTMLDivElement>({ staggerDelay: 100 });
+
   return (
     <div className="mx-auto w-full">
       {/* Hero */}
       <section className="flex min-h-[80vh] flex-col items-center justify-center px-6 pt-32 pb-16 sm:pt-40 sm:pb-20">
-        <p className="mx-auto max-w-4xl text-center font-source-serif-4 text-3xl text-slate-900 italic leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-7xl dark:text-white">
+        <p className="hero-entrance mx-auto max-w-4xl text-center font-source-serif-4 text-3xl text-slate-900 italic leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-7xl dark:text-white">
           Non ridere, non lugere, neque detestari, sed intelligere.
         </p>
-        <div className="mt-8 h-px w-24 bg-gradient-to-r from-transparent via-slate-400 to-transparent dark:via-slate-600" />
-        <p className="mt-8 max-w-2xl text-center text-base text-slate-600 leading-relaxed dark:text-slate-400">
+        <div className="hero-entrance hero-delay-300 mt-8 h-px w-24 bg-gradient-to-r from-transparent via-slate-400 to-transparent dark:via-slate-600" />
+        <p className="hero-entrance hero-delay-500 mt-8 max-w-2xl text-center text-base text-slate-600 leading-relaxed dark:text-slate-400">
           「馬鹿にしたり嘆いたり疑ったりせずに、ただありのままを理解する。」
           17世紀の哲学者スピノザが『エチカ』に記したこの言葉は、私がこのサイトをつくった理由の一つでもあります。
           このブログは、私自身の思考や学びを可視化する場です。普段読んだ本の記録や、学んだこと、考えたことをまとめています。
@@ -49,7 +54,10 @@ const Home = () => {
       </section>
 
       {/* Profile */}
-      <section className="mx-auto max-w-7xl px-6 pb-20">
+      <section
+        ref={profileRef}
+        className="reveal-up mx-auto max-w-7xl px-6 pb-20"
+      >
         <div className="flex flex-col items-center gap-10 sm:flex-row sm:items-start sm:gap-16">
           <div className="w-40 shrink-0 sm:w-48 md:w-56">
             <img
@@ -89,15 +97,18 @@ const Home = () => {
 
       {/* Link cards */}
       <section className="mx-auto max-w-7xl px-6 pb-20">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          ref={cardsRef}
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {linkCards.map((card) => (
-            <a href={card.to} key={card.to} className="group">
-              <article className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition-all duration-200 hover:border-slate-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
+            <a href={card.to} key={card.to} className="stagger-child group">
+              <article className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:border-slate-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
                 <div className="flex items-center justify-center overflow-hidden bg-slate-50 p-6 dark:bg-slate-800">
                   <img
                     src={card.image}
                     alt={card.alt}
-                    className="h-40 w-40 object-contain transition-transform duration-200 group-hover:scale-105"
+                    className="h-40 w-40 object-contain transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
                 <div className="flex flex-1 flex-col gap-2 p-5">

@@ -25,18 +25,16 @@ const DetailBookCard = (data: Book) => {
 
   return (
     <article className="flex w-full flex-col gap-8 sm:flex-row sm:items-start">
-      <div className="mx-auto w-full shrink-0 sm:w-1/3">
+      <div className="reveal-left revealed mx-auto w-full shrink-0 sm:w-1/3">
         <div className="overflow-hidden rounded-xl bg-slate-50 p-4 dark:bg-slate-800">
           <img
             src={coverUrl}
             alt={`Cover of ${data.title}`}
-            // 3. 詳細ページなので loading="eager" か、指定なしでOK
-            // aspect-ratio を指定しておくと読み込み時のガタつきを防げます
             className="mx-auto block aspect-[2/3] w-full object-contain"
           />
         </div>
       </div>
-      <div className="flex w-full flex-col gap-4 sm:w-2/3">
+      <div className="reveal-right revealed flex w-full flex-col gap-4 sm:w-2/3">
         <a
           href="/books"
           className="text-slate-500 text-sm transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"

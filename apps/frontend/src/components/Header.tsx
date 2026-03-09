@@ -74,10 +74,10 @@ export function Header() {
                   key={item.to}
                   href={item.to}
                   className={[
-                    "nav-link relative rounded-lg px-4 py-2 font-medium text-sm tracking-wide transition-all duration-200",
+                    "relative rounded-lg px-4 py-2 font-medium text-sm tracking-wide transition-all duration-200",
                     isActive
                       ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white",
+                      : "nav-link text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white",
                   ].join(" ")}
                 >
                   {item.label}
