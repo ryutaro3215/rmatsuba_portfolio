@@ -84,6 +84,181 @@
   border-color: var(--borderColor-default, #30363d);
 }
 
+/* ── Animation utility classes ── */
+
+/* Reveal-up: fade in + slide up */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-up.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Reveal-scale: fade in + scale up from small */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale.revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Reveal-left: fade in + slide from left */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-left.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Reveal-right: fade in + slide from right */
+.reveal-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-right.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Stagger child: used by useStaggerChildren — starts hidden, animated via inline animation-delay */
+.stagger-child {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.stagger-child.revealed {
+  animation: stagger-in 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes stagger-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reveal-divider: gradient line expands from center */
+.reveal-divider {
+  transform: scaleX(0);
+  transition: transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-divider.revealed {
+  transform: scaleX(1);
+}
+
+/* Hero entrance: blur-to-sharp + fade-up */
+.hero-entrance {
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(20px);
+  animation: hero-text 1000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes hero-text {
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+/* Delayed variants for hero sequence */
+.hero-delay-300 {
+  animation-delay: 300ms;
+}
+.hero-delay-500 {
+  animation-delay: 500ms;
+}
+.hero-delay-700 {
+  animation-delay: 700ms;
+}
+
+/* Animation delay utilities for reveal sequences */
+.reveal-delay-100 {
+  transition-delay: 100ms;
+}
+.reveal-delay-200 {
+  transition-delay: 200ms;
+}
+.reveal-delay-300 {
+  transition-delay: 300ms;
+}
+
+/* Nav link animated underline (desktop only, inactive links) */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 0;
+  height: 1.5px;
+  background: currentColor;
+  transition:
+    width 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    left 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover::after {
+  width: 60%;
+  left: 20%;
+}
+
+/* prefers-reduced-motion: 全アニメーション無効化 */
+/* 高い詳細度で上書きするため :where() は使わず、直接セレクタを二重化 */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-up.reveal-up {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .reveal-scale.reveal-scale {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .reveal-left.reveal-left {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .reveal-right.reveal-right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .stagger-child.stagger-child {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .reveal-divider.reveal-divider {
+    transform: none;
+    transition: none;
+  }
+  .hero-entrance.hero-entrance {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    animation: none;
+  }
+}
+
 @theme {
   --font-source-serif-4: "Source Serif 4", serif;
   --animate-fade-up: fade-up 700ms ease-out both;
