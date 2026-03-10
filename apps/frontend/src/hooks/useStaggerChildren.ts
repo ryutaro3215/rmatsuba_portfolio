@@ -10,7 +10,7 @@ interface UseStaggerChildrenOptions {
 export function useStaggerChildren<T extends HTMLElement = HTMLElement>({
   staggerDelay = 80,
   childSelector = ".stagger-child",
-  threshold = 0.1,
+  threshold = 0,
   rootMargin = "0px 0px -20px 0px",
 }: UseStaggerChildrenOptions = {}) {
   const [container, setContainer] = useState<T | null>(null);
