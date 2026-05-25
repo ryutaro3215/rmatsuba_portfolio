@@ -1,5 +1,4 @@
 import { type Book, BookGenres, type GenreSlug } from "@mysite/shared";
-import { navigate } from "vike/client/router";
 import { getBookCoverUrl } from "../app/importImages";
 import { genreTheme } from "../data/genreTheme";
 
@@ -17,9 +16,7 @@ const DetailBookCard = (data: Book) => {
     e.preventDefault();
     e.stopPropagation();
     if (genreSlug) {
-      navigate(`/books?genre=${genreSlug}#genre-selector`, {
-        keepScrollPosition: true,
-      });
+      window.location.href = `/books?genre=${genreSlug}`;
     }
   };
 

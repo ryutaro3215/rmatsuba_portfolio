@@ -29,7 +29,7 @@ export const BookGenreSchema = z.enum(
 
 export const RatingSchema = z.number().min(0).max(5);
 export const BookSchema = z.object({
-  id: z.number().int().nonnegative(),
+  id: z.string(),
   title: z.string().min(1),
   author: z.string().min(1),
   cover: z.string().min(1),
@@ -38,6 +38,7 @@ export const BookSchema = z.object({
   status: BookStatusSchema,
   rating: RatingSchema,
   url: z.url().optional(),
+  isFavorite: z.boolean().optional(),
 });
 
 export type GenreOption = { value: Genre; label: string };
