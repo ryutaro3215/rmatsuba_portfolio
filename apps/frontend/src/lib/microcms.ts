@@ -2,19 +2,10 @@ import type { Book } from "@mysite/shared";
 import { createClient } from "microcms-js-sdk";
 
 function getClient() {
-  const serviceDomain =
-    import.meta.env.VITE_MICROCMS_SERVICE_DOMAIN ||
-    (typeof process !== "undefined"
-      ? process.env.VITE_MICROCMS_SERVICE_DOMAIN
-      : undefined) ||
-    "";
-  const apiKey =
-    import.meta.env.VITE_MICROCMS_API_KEY ||
-    (typeof process !== "undefined"
-      ? process.env.VITE_MICROCMS_API_KEY
-      : undefined) ||
-    "";
-  return createClient({ serviceDomain, apiKey });
+  return createClient({
+    serviceDomain: import.meta.env.VITE_MICROCMS_SERVICE_DOMAIN ?? "",
+    apiKey: import.meta.env.VITE_MICROCMS_API_KEY ?? "",
+  });
 }
 
 type MicroCMSBook = {
