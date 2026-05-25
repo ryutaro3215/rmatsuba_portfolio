@@ -1,10 +1,21 @@
 import type { Book } from "@mysite/shared";
 import { createClient } from "microcms-js-sdk";
 
-export const client = createClient({
-  serviceDomain: import.meta.env.VITE_MICROCMS_SERVICE_DOMAIN ?? "",
-  apiKey: import.meta.env.VITE_MICROCMS_API_KEY ?? "",
-});
+function getClient() {
+  const serviceDomain =
+    import.meta.env.VITE_MICROCMS_SERVICE_DOMAIN ||
+    (typeof process !== "undefined"
+      ? process.env.VITE_MICROCMS_SERVICE_DOMAIN
+      : undefined) ||
+    "";
+  const apiKey =
+    import.meta.env.VITE_MICROCMS_API_KEY ||
+    (typeof process !== "undefined"
+      ? process.env.VITE_MICROCMS_API_KEY
+      : undefined) ||
+    "";
+  return createClient({ serviceDomain, apiKey });
+}
 
 type MicroCMSBook = {
   id: string;
@@ -40,7 +51,7 @@ export async function getAllBooks(): Promise<Book[]> {
   const allContents: MicroCMSBook[] = [];
 
   while (true) {
-    const res = await client.getList<MicroCMSBook>({
+    const res = await getClient().getList<MicroCMSBook>({
       endpoint: "books",
       queries: { limit, offset },
     });
@@ -53,7 +64,7 @@ export async function getAllBooks(): Promise<Book[]> {
 }
 
 export async function getBookById(id: string): Promise<Book> {
-  const raw = await client.getListDetail<MicroCMSBook>({
+  const raw = await getClient().getListDetail<MicroCMSBook>({
     endpoint: "books",
     contentId: id,
   });
