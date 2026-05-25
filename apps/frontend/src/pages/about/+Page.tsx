@@ -1,7 +1,7 @@
 import type { Book, Tech } from "@mysite/shared";
+import { useData } from "vike-react/useData";
 import { getTechIconUrl } from "../../app/importImages";
 import { BookCard } from "../../components/BookCard";
-import { books, favoriteBooks } from "../../data/books";
 import { techs } from "../../data/tech";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 import { useStaggerChildren } from "../../hooks/useStaggerChildren";
@@ -34,6 +34,9 @@ const TechCategory = ({ title, items }: { title: string; items: Tech[] }) => (
 );
 
 const About = () => {
+  const { favoriteBooks: favoriteBooksData } = useData<{
+    favoriteBooks: Book[];
+  }>();
   const languages: Tech[] = techs.filter(
     (tech) => tech.category === "Languages",
   );
@@ -45,9 +48,6 @@ const About = () => {
   );
   const toolingAndWorkflows: Tech[] = techs.filter(
     (tech) => tech.category === "Tooling / Workflows",
-  );
-  const favoriteBooksData: Book[] = books.filter((book) =>
-    favoriteBooks.includes(book.id),
   );
 
   const profileRef = useScrollReveal<HTMLElement>();

@@ -1,5 +1,6 @@
-import { books } from "../../../data/books";
+import { getAllBooks } from "../../../lib/microcms";
 
-export function onBeforePrerenderStart() {
+export async function onBeforePrerenderStart() {
+  const books = await getAllBooks();
   return books.map((book) => `/books/${book.id}`);
 }

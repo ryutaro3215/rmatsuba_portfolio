@@ -1,15 +1,23 @@
-import { BookGenreSchema, BookGenres, type GenreSlug } from "@mysite/shared";
+import {
+  type Book,
+  BookGenreSchema,
+  BookGenres,
+  type GenreSlug,
+} from "@mysite/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { navigate } from "vike/client/router";
+import { useData } from "vike-react/useData";
 import { usePageContext } from "vike-react/usePageContext";
 import { BookCard } from "../../components/BookCard";
-import { books } from "../../data/books";
 import { useStaggerChildren } from "../../hooks/useStaggerChildren";
 import "../../style.css";
 
 const Library = () => {
+  const { books } = useData<{ books: Book[] }>();
   const { urlParsed } = usePageContext();
-  const selectedGenreSlugs = urlParsed.searchAll.genre || [];
+  // ジャンルフィルタはクライアントサイドのみで管理（Vikeのnavigate()を使うとdata loaderが再実行されるため）
+  const [selectedGenreSlugs, setSelectedGenreSlugs] = useState<string[]>(
+    urlParsed.searchAll.genre || [],
+  );
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -48,24 +56,23 @@ const Library = () => {
   };
 
   const toggleGenre = (slug: string) => {
-    let newGenres = [...selectedGenreSlugs];
+    setSelectedGenreSlugs((prev) => {
+      const next = prev.includes(slug)
+        ? prev.filter((g) => g !== slug)
+        : [...prev, slug];
 
-    if (newGenres.includes(slug)) {
-      newGenres = newGenres.filter((g) => g !== slug);
-    } else {
-      newGenres.push(slug);
-    }
+      // URLをVike navigation無しで更新（data loader再実行を防ぐ）
+      const newParams = new URLSearchParams();
+      for (const genre of next) {
+        newParams.append("genre", genre);
+      }
+      const queryString = newParams.toString();
+      const newUrl = queryString
+        ? `${urlParsed.pathname}?${queryString}`
+        : urlParsed.pathname;
+      window.history.replaceState({}, "", newUrl);
 
-    const newParams = new URLSearchParams();
-    for (const genre of newGenres) {
-      newParams.append("genre", genre);
-    }
-
-    const queryString = newParams.toString();
-    const newUrl = queryString ? `?${queryString}` : urlParsed.pathname;
-    navigate(newUrl, {
-      keepScrollPosition: true,
-      overwriteLastHistoryEntry: true,
+      return next;
     });
   };
 
