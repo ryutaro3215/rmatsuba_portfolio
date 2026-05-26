@@ -3,6 +3,14 @@ export default function Head() {
   return (
     <>
       <link rel="icon" href={favicon} />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      {/* サイト全体のデフォルト OG / Twitter */}
+      <meta property="og:site_name" content="rmatsuba.com" />
+      <meta property="og:locale" content="ja_JP" />
+      <meta name="twitter:card" content="summary" />
+      <meta name="author" content="Ryutaro Matsuba" />
+
       <noscript>
         <style>{`
           .kt-word, .kt-char, .rv {
