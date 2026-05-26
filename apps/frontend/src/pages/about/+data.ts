@@ -3,6 +3,8 @@ import { getAllBooks } from "../../lib/microcms";
 
 export async function data(): Promise<{ favoriteBooks: Book[] }> {
   const books = await getAllBooks();
-  const favoriteBooks = books.filter((book) => book.isFavorite === true);
+  const favoriteBooks = books
+    .filter((book) => book.isFavorite === true)
+    .slice(0, 8);
   return { favoriteBooks };
 }

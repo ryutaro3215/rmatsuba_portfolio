@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ja" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Library — R. Matsuba</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="shared.jsx"></script>
+  <script type="text/babel" src="page-app.jsx"></script>
+  <script type="text/babel">
+
+const { useState, useRef, useCallback, useEffect } = React;
+
+/* ── Genre palette — each genre gets a unique accent swatch ── */
+const GENRES = [
+  { slug: "management",  label: "経営学",              accent: "oklch(0.58 0.13 250)" },
+  { slug: "history",     label: "歴史",                accent: "oklch(0.62 0.09 60)"  },
+  { slug: "philosophy",  label: "哲学・思想",          accent: "oklch(0.58 0.10 280)" },
+  { slug: "cs",          label: "CS・ソフトウェア",    accent: "oklch(0.60 0.12 155)" },
+  { slug: "economics",   label: "経済・社会",          accent: "oklch(0.62 0.10 40)"  },
+  { slug: "science",     label: "自然科学",            accent: "oklch(0.60 0.11 200)" },
+  { slug: "literature",  label: "文学・エッセイ",      accent: "oklch(0.62 0.08 20)"  },
+  { slug: "other",       label: "その他",              accent: "oklch(0.55 0.04 0)"   },
+];
+
+const GENRE_MAP = Object.fromEntries(GENRES.map((g) => [g.slug, g]));
+
+/* ── Sample books (replace with real CMS data) ── */
+const BOOKS = [
+  { id: "1",  title: "エチカ",                      author: "スピノザ",          genre: "philosophy",  color: "#2a2060" },
+  { id: "2",  title: "経営組織",                    author: "桑田耕太郎・田尾雅夫", genre: "management", color: "#1a3050" },
+  { id: "3",  title: "日本社会の歴史（上）",        author: "網野善彦",          genre: "history",     color: "#3a2010" },
+  { id: "4",  title: "日本社会の歴史（下）",        author: "網野善彦",          genre: "history",     color: "#3a2010" },
+  { id: "5",  title: "プログラミング言語C",         author: "K&R",              genre: "cs",          color: "#103020" },
+  { id: "6",  title: "競争の戦略",                  author: "M. ポーター",       genre: "management",  color: "#202050" },
+  { id: "7",  title: "存在と時間（上）",            author: "ハイデガー",        genre: "philosophy",  color: "#301530" },
+  { id: "8",  title: "存在と時間（下）",            author: "ハイデガー",        genre: "philosophy",  color: "#301530" },
+  { id: "9",  title: "資本論（第一巻）",            author: "マルクス",          genre: "economics",   color: "#301010" },
+  { id: "10", title: "銃・病原菌・鉄",              author: "J. ダイアモンド",   genre: "history",     color: "#203020" },
+  { id: "11", title: "OSの仕組み",                  author: "武内覚",            genre: "cs",          color: "#102030" },
+  { id: "12", title: "ゼロから学ぶ深層学習",       author: "斎藤康毅",          genre: "cs",          color: "#103025" },
+  { id: "13", title: "実践ビヘイビアデザイン",      author: "B. フォッグ",       genre: "management",  color: "#1a2040" },
+  { id: "14", title: "哲学の教科書",               author: "中島義道",          genre: "philosophy",  color: "#281528" },
+  { id: "15", title: "イノベーションのジレンマ",    author: "C. クリステンセン", genre: "management",  color: "#1a1a40" },
+  { id: "16", title: "ファスト&スロー（上）",      author: "D. カーネマン",     genre: "economics",   color: "#282818" },
+  { id: "17", title: "ファスト&スロー（下）",      author: "D. カーネマン",     genre: "economics",   color: "#282818" },
+  { id: "18", title: "七つの会議",                  author: "池井戸潤",          genre: "literature",  color: "#201515" },
+  { id: "19", title: "サピエンス全史（上）",        author: "Y. ハラリ",         genre: "history",     color: "#203028" },
+  { id: "20", title: "サピエンス全史（下）",        author: "Y. ハラリ",         genre: "history",     color: "#203028" },
+  { id: "21", title: "Clean Code",                  author: "R. Martin",         genre: "cs",          color: "#0f2535" },
+  { id: "22", title: "ゼロ・トゥ・ワン",            author: "P. ティール",       genre: "management",  color: "#151535" },
+  { id: "23", title: "権力と支配",                  author: "M. ウェーバー",     genre: "philosophy",  color: "#201228" },
+  { id: "24", title: "The Rust Programming Language", author: "S. Klabnik",      genre: "cs",          color: "#0d2515" },
+  { id: "25", title: "帝国主義論",                  author: "レーニン",          genre: "economics",   color: "#281010" },
+  { id: "26", title: "遠野物語",                    author: "柳田國男",          genre: "literature",  color: "#1a1510" },
+  { id: "27", title: "歴史とは何か",               author: "E. カー",           genre: "history",     color: "#252015" },
+  { id: "28", title: "コンピュータの仕組み",        author: "入門C++",           genre: "cs",          color: "#102020" },
+  { id: "29", title: "組織の経済学",               author: "ミルグロム",        genre: "management",  color: "#1a1a40" },
+  { id: "30", title: "パンセ",                      author: "パスカル",          genre: "philosophy",  color: "#201522" },
+];
+
+function LibraryPage() {
+  const [activeGenre, setActiveGenre] = useState(null);
+  const headerRef = useReveal(0.1);
+  const gridRef = useReveal(0.05);
+
+  const filtered = activeGenre ? BOOKS.filter((b) => b.genre === activeGenre) : BOOKS;
+
+  return (
+    <div>
+      {/* Page header */}
+      <header ref={headerRef} className="rv" style={{ maxWidth: 1320, margin: "0 auto", padding: "160px 40px 64px" }}>
+        <div className="mono accent" style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 20 }}>
+          fol. 004 / Library
+        </div>
+        <h1 className="latin" style={{ fontSize: "clamp(56px, 8vw, 120px)", fontWeight: 200, lineHeight: 0.92, margin: "0 0 20px", letterSpacing: "-0.025em" }}>
+          <KineticText text="Bibliotheca." by="word" step={80} delay={200} />
+        </h1>
+        <p className="muted" style={{ fontSize: 15, lineHeight: 1.7, maxWidth: 560, margin: 0 }}>
+          読了書の記録。経営学・歴史・哲学・CSを中心に、大学4年間で約350冊。
+        </p>
+        <div className="rule-draw in" style={{ width: "100%", height: 1, background: "var(--rule)", marginTop: 48 }} />
+      </header>
+
+      {/* Sticky genre filter */}
+      <div style={{
+        position: "sticky",
+        top: 64,
+        zIndex: 10,
+        background: "color-mix(in oklch, var(--bg) 85%, transparent)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderBottom: "1px solid var(--rule-soft)",
+        padding: "0 0 0",
+      }}>
+        <div style={{ maxWidth: 1320, margin: "0 auto", padding: "14px 40px", display: "flex", gap: 6, flexWrap: "nowrap", overflowX: "auto" }}>
+          <GenreChip label="All" active={!activeGenre} onClick={() => setActiveGenre(null)} count={BOOKS.length} />
+          {GENRES.map((g) => {
+            const cnt = BOOKS.filter((b) => b.genre === g.slug).length;
+            if (!cnt) return null;
+            return <GenreChip key={g.slug} label={g.label} active={activeGenre === g.slug} onClick={() => setActiveGenre(g.slug === activeGenre ? null : g.slug)} count={cnt} />;
+          })}
+        </div>
+      </div>
+
+      {/* Stats bar */}
+      <div style={{ maxWidth: 1320, margin: "0 auto", padding: "20px 40px" }}>
+        <div className="mono muted" style={{ fontSize: 11, letterSpacing: "0.2em" }}>
+          {activeGenre ? GENRE_MAP[activeGenre]?.label : "ALL GENRES"} — {filtered.length} volumes
+        </div>
+      </div>
+
+      {/* Book grid */}
+      <div ref={gridRef} className="rv" style={{ maxWidth: 1320, margin: "0 auto", padding: "8px 40px 160px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 16 }}>
+        {filtered.map((book, i) => (
+          <BookCard key={book.id} book={book} index={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function GenreChip({ label, active, onClick, count }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="mono"
+      style={{
+        whiteSpace: "nowrap",
+        background: active ? "var(--ink)" : "transparent",
+        color: active ? "var(--bg)" : "var(--ink-mute)",
+        border: "1px solid var(--rule)",
+        padding: "5px 14px",
+        fontSize: 10,
+        letterSpacing: "0.2em",
+        textTransform: "uppercase",
+        cursor: "pointer",
+        borderRadius: 2,
+        display: "flex",
+        gap: 6,
+        alignItems: "center",
+        transition: "none",
+        flexShrink: 0,
+      }}
+    >
+      {label}
+      <span style={{ opacity: 0.55 }}>{count}</span>
+    </button>
+  );
+}
+
+function BookCard({ book, index }) {
+  const [hovered, setHovered] = useState(false);
+  const genre = GENRE_MAP[book.genre] || GENRE_MAP.other;
+
+  return (
+    <a
+      href={`#book-${book.id}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ display: "flex", flexDirection: "column", textDecoration: "none", color: "inherit", transform: hovered ? "translateY(-4px)" : "none", transition: "transform 400ms cubic-bezier(0.16, 1, 0.3, 1)" }}
+    >
+      {/* Cover */}
+      <div style={{
+        aspectRatio: "2/3",
+        background: book.color,
+        border: "1px solid color-mix(in oklch, var(--rule) 60%, transparent)",
+        position: "relative",
+        overflow: "hidden",
+        transition: "border-color 400ms",
+        borderColor: hovered ? "var(--accent)" : undefined,
+      }}>
+        {/* Spine accent */}
+        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: genre.accent, opacity: 0.9 }} />
+        {/* Title on cover */}
+        <div className="mono" style={{
+          position: "absolute",
+          inset: 8,
+          insetLeft: 16,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          gap: 4,
+        }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.5, color: "#fff", wordBreak: "break-all" }}>
+            {genre.label}
+          </div>
+          <div style={{ fontSize: 10, lineHeight: 1.4, fontWeight: 600, color: "#fff", opacity: 0.85, wordBreak: "break-word" }}>
+            {book.title}
+          </div>
+        </div>
+      </div>
+      {/* Info */}
+      <div style={{ paddingTop: 8 }}>
+        <p style={{ fontSize: 11, lineHeight: 1.35, margin: "0 0 3px", fontWeight: 500, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+          {book.title}
+        </p>
+        <p className="mono muted" style={{ fontSize: 10, margin: 0, letterSpacing: "0.04em" }}>
+          {book.author}
+        </p>
+      </div>
+    </a>
+  );
+}
+
+/* ── Mount ── */
+function App() {
+  return (
+    <PageApp>
+      <LibraryPage />
+    </PageApp>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

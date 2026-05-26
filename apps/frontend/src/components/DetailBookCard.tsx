@@ -1,73 +1,239 @@
 import { type Book, BookGenres, type GenreSlug } from "@mysite/shared";
 import { getBookCoverUrl } from "../app/importImages";
-import { genreTheme } from "../data/genreTheme";
 
 const DetailBookCard = (data: Book) => {
   const coverUrl = getBookCoverUrl(data.cover);
-
-  const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-slate-200";
-  const genreTextColor = genreTheme[data.genre]?.textColor || "text-slate-900";
 
   const genreSlug = (Object.keys(BookGenres) as GenreSlug[]).find(
     (key) => BookGenres[key] === data.genre,
   );
 
-  const handleGenreClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (genreSlug) {
-      window.location.href = `/books?genre=${genreSlug}`;
-    }
-  };
-
   return (
-    <article className="flex w-full flex-col gap-8 sm:flex-row sm:items-start">
-      <div className="reveal-left revealed mx-auto w-full shrink-0 sm:w-1/3">
-        <div className="overflow-hidden rounded-xl bg-slate-50 p-4 dark:bg-slate-800">
-          <img
-            src={coverUrl}
-            alt={`Cover of ${data.title}`}
-            className="mx-auto block aspect-[2/3] w-full object-contain"
-          />
+    <div
+      style={{
+        maxWidth: 1320,
+        margin: "0 auto",
+        padding: "120px 40px 160px",
+      }}
+    >
+      {/* Back link */}
+      <a
+        href="/books"
+        className="u-link"
+        style={{
+          fontFamily: "var(--mono)",
+          fontSize: 11,
+          letterSpacing: "0.25em",
+          textTransform: "uppercase",
+          color: "var(--ink-mute)",
+          display: "inline-block",
+          marginBottom: 60,
+        }}
+      >
+        ← Library
+      </a>
+
+      {/* Hero: cover + metadata */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "200px 1fr",
+          gap: 64,
+          paddingBottom: 80,
+          borderBottom: "1px solid var(--rule)",
+          marginBottom: 80,
+        }}
+        className="book-detail-hero"
+      >
+        {/* Cover */}
+        <div>
+          <div
+            style={{
+              aspectRatio: "2/3",
+              background: "var(--rule)",
+              position: "relative",
+              boxShadow: "6px 6px 24px rgba(0,0,0,0.5)",
+              border: "1px solid var(--rule)",
+              overflow: "hidden",
+            }}
+          >
+            {data.cover && (
+              <img
+                src={coverUrl}
+                alt={data.title}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            )}
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--mono)",
+              fontSize: 9,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: "var(--ink-mute)",
+              marginTop: 12,
+              textAlign: "center",
+            }}
+          >
+            {data.genre}
+          </div>
+        </div>
+
+        {/* Metadata */}
+        <div>
+          {/* Genre kicker */}
+          <div
+            style={{
+              fontFamily: "var(--mono)",
+              fontSize: 11,
+              letterSpacing: "0.28em",
+              textTransform: "uppercase",
+              color: "var(--accent)",
+              marginBottom: 16,
+            }}
+          >
+            {genreSlug ? (
+              <a
+                href={`/books?genre=${genreSlug}`}
+                style={{ color: "inherit" }}
+              >
+                {data.genre}
+              </a>
+            ) : (
+              data.genre
+            )}
+          </div>
+
+          {/* Title */}
+          <h1
+            style={{
+              fontFamily: "var(--serif)",
+              fontStyle: "italic",
+              fontWeight: 200,
+              fontSize: "clamp(40px, 5.6vw, 76px)",
+              letterSpacing: "-0.02em",
+              lineHeight: 0.95,
+              margin: "0 0 16px",
+            }}
+          >
+            {data.title}
+          </h1>
+
+          {/* Metadata DL */}
+          <dl
+            style={{
+              display: "grid",
+              gridTemplateColumns: "120px 1fr",
+              gap: "16px 24px",
+              margin: "32px 0",
+            }}
+          >
+            {[
+              ["著者", data.author],
+              ["ジャンル", data.genre],
+              [
+                "ステータス",
+                data.status === "read"
+                  ? "読了"
+                  : data.status === "reading"
+                    ? "読書中"
+                    : "未読",
+              ],
+            ].map(([dt, dd]) => (
+              <div key={dt} style={{ display: "contents" }}>
+                <dt
+                  style={{
+                    fontFamily: "var(--mono)",
+                    fontSize: 10,
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                    color: "var(--ink-mute)",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  {dt}
+                </dt>
+                <dd style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>
+                  {dd}
+                </dd>
+              </div>
+            ))}
+            {data.tags && data.tags.length > 0 && (
+              <div style={{ display: "contents" }}>
+                <dt
+                  style={{
+                    fontFamily: "var(--mono)",
+                    fontSize: 10,
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                    color: "var(--ink-mute)",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  Tags
+                </dt>
+                <dd style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>
+                  {data.tags.map((t) => `#${t}`).join("  ")}
+                </dd>
+              </div>
+            )}
+          </dl>
+
+          {/* Rating dots */}
+          <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <div
+                key={n}
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  background:
+                    n <= (data.rating ?? 0) ? "var(--accent)" : "var(--rule)",
+                }}
+              />
+            ))}
+          </div>
+
+          {/* External link */}
+          {data.url && (
+            <a
+              href={data.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="u-link"
+              style={{
+                display: "inline-block",
+                marginTop: 32,
+                fontFamily: "var(--mono)",
+                fontSize: 11,
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                color: "var(--accent)",
+              }}
+            >
+              詳細を見る →
+            </a>
+          )}
         </div>
       </div>
-      <div className="reveal-right revealed flex w-full flex-col gap-4 sm:w-2/3">
-        <a
-          href="/books"
-          className="text-slate-500 text-sm transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-        >
-          &larr; Library に戻る
-        </a>
-        <h1 className="font-bold font-source-serif-4 text-2xl text-slate-900 tracking-tight sm:text-3xl md:text-4xl dark:text-white">
-          {data.title}
-        </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-400">
-          {data.author}
-        </p>
-        <button
-          type="button"
-          className={`${genreBgColor} ${genreTextColor} w-fit max-w-full cursor-pointer truncate rounded-full px-3 py-1 text-sm transition-all duration-200 hover:shadow-sm hover:brightness-95 active:scale-95`}
-          onClick={handleGenreClick}
-        >
-          # {data.genre}
-        </button>
-        {data.tags && data.tags.length > 0 && (
-          <>
-            <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700" />
-            <div className="flex flex-wrap gap-1.5">
-              {data.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-slate-100 px-2.5 py-0.5 text-slate-600 text-xs dark:bg-slate-800 dark:text-slate-400"
-                >
-                  # {tag}
-                </span>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-    </article>
+
+      <style>{`
+        @media (max-width: 720px) {
+          .book-detail-hero { grid-template-columns: 1fr !important; gap: 40px !important; }
+          div[style*="padding: 120px 40px"] { padding-left: 22px !important; padding-right: 22px !important; }
+        }
+      `}</style>
+    </div>
   );
 };
 

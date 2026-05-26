@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ja" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>エチカ — R. Matsuba Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    .review-prose { font-family: var(--serif); font-size: 16px; line-height: 1.95; }
+    .review-prose p { margin: 0 0 1.5em; text-indent: 1.4em; }
+    .review-prose p:first-of-type { text-indent: 0; }
+    .review-prose p:first-of-type::first-letter {
+      font-family: var(--serif); font-style: italic; font-weight: 200;
+      float: left; font-size: 4.8em; line-height: 0.82;
+      padding: 0.04em 0.1em 0 0; color: var(--accent);
+    }
+    .review-prose em { font-style: italic; font-weight: 300; }
+    .review-prose strong { font-weight: 500; color: var(--ink); }
+
+    /* Book passage quote */
+    .passage {
+      border-left: 2px solid var(--accent);
+      padding: 0 0 0 24px;
+      margin: 2em 0;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+    .passage cite {
+      display: block; font-style: normal;
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-mute); margin-top: 10px;
+    }
+
+    /* Star / dot rating */
+    .rating { display: flex; gap: 6px; align-items: center; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot.filled { background: var(--accent); }
+    .dot.empty  { background: var(--rule); }
+
+    /* Related books mini-cards */
+    .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 14px; }
+    .related-card { display: flex; flex-direction: column; gap: 6px; cursor: pointer; text-decoration: none; color: inherit; }
+    .related-cover { aspect-ratio: 2/3; border: 1px solid var(--rule); position: relative; overflow: hidden; transition: border-color 300ms; }
+    .related-card:hover .related-cover { border-color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="shared.jsx"></script>
+  <script type="text/babel" src="page-app.jsx"></script>
+  <script type="text/babel">
+
+const { useState } = React;
+
+/* ── Book data ── */
+const BOOK = {
+  id: "1",
+  title: "エチカ",
+  subtitle: "Ethica Ordine Geometrico Demonstrata",
+  author: "バルーフ・デ・スピノザ",
+  translator: "畠中尚志（訳）",
+  publisher: "岩波書店",
+  series: "岩波文庫",
+  year: 1951,
+  pages: 412,
+  genre: "哲学・思想",
+  genreSlug: "philosophy",
+  accentColor: "oklch(0.58 0.13 280)",
+  coverBg: "#1e1428",
+  rating: 5,
+  readDate: "2026-02",
+  status: "読了",
+  review: `スピノザが書き上げた『エチカ』は、哲学史においてもっとも異様な著作のひとつだ。書名（Ethica Ordine Geometrico Demonstrata——幾何学的秩序に従って論証された倫理学）が示す通り、定義・公理・定理・系・備考という、まるでユークリッド幾何学のような形式で「感情」と「自由」を論じる。
+
+最初に読んだとき、その厳密すぎる形式に何度もページを閉じそうになった。しかし読み進めるうち、スピノザの企図が見えてきた——感情を道徳的に裁くのではなく、自然現象として記述する、という徹底した姿勢だ。
+
+「神即自然（Deus sive Natura）」という命題は、当時の文脈では危険な汎神論だった。しかし私にとっては、「自分の感情を外から評価しない」というひとつの認識論的立場として読める。感情は善悪ではなく、必然だ——この視点は、日々の自己評価のあり方を静かに変えていった。
+
+サイトの冒頭に置いている「Non ridere, non lugere, neque detestari, sed intelligere」はこの本の第三部序文にある。この一文を理解するためだけでも、読む価値がある。`,
+};
+
+const RELATED = [
+  { id: "30", title: "パンセ",          author: "パスカル",      color: "#201522", accent: "oklch(0.58 0.10 280)" },
+  { id: "14", title: "哲学の教科書",    author: "中島義道",      color: "#281528", accent: "oklch(0.58 0.10 280)" },
+  { id: "7",  title: "存在と時間（上）", author: "ハイデガー",   color: "#301530", accent: "oklch(0.58 0.10 280)" },
+  { id: "23", title: "権力と支配",       author: "M. ウェーバー", color: "#201228", accent: "oklch(0.58 0.10 280)" },
+];
+
+function BookDetailPage() {
+  const headerRef = useReveal(0.1);
+  const reviewRef = useReveal(0.1);
+  const relatedRef = useReveal(0.1);
+
+  const paragraphs = BOOK.review.trim().split("\n\n");
+
+  return (
+    <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 40px" }}>
+
+      {/* Back + header */}
+      <div ref={headerRef} className="rv" style={{ paddingTop: 120, paddingBottom: 60 }}>
+        <a href="Library.html" className="mono muted" style={{
+          fontSize: 11, letterSpacing: "0.25em", textTransform: "uppercase",
+          display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none",
+        }}>
+          <span style={{ color: "var(--accent)" }}>←</span> Library
+        </a>
+      </div>
+
+      {/* Hero — cover + metadata */}
+      <section style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: 64, alignItems: "start", paddingBottom: 80, borderBottom: "1px solid var(--rule)" }} className="book-hero-grid">
+
+        {/* Book cover */}
+        <div>
+          <div style={{
+            aspectRatio: "2/3",
+            background: BOOK.coverBg,
+            border: "1px solid var(--rule)",
+            position: "relative",
+            overflow: "hidden",
+            boxShadow: "6px 6px 24px rgba(0,0,0,0.5)",
+          }}>
+            {/* Spine accent */}
+            <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 6, background: BOOK.accentColor }} />
+            {/* Cover content */}
+            <div style={{ position: "absolute", inset: 0, paddingLeft: 16, paddingRight: 10, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 14px 16px 18px" }}>
+              <div>
+                <div className="mono" style={{ fontSize: 8, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.45)", marginBottom: 12 }}>
+                  {BOOK.series}
+                </div>
+                <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 200, fontSize: 18, lineHeight: 1.2, color: "rgba(255,255,255,0.9)" }}>
+                  {BOOK.title}
+                </div>
+              </div>
+              <div>
+                <div style={{ width: 20, height: 1, background: "rgba(255,255,255,0.3)", marginBottom: 10 }} />
+                <div className="mono" style={{ fontSize: 9, letterSpacing: "0.06em", color: "rgba(255,255,255,0.5)" }}>
+                  {BOOK.author.split("・").pop()}
+                </div>
+                <div className="mono" style={{ fontSize: 8, letterSpacing: "0.06em", color: "rgba(255,255,255,0.3)", marginTop: 3 }}>
+                  {BOOK.publisher}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mono muted" style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", textAlign: "center", marginTop: 10 }}>
+            book cover
+          </div>
+        </div>
+
+        {/* Metadata */}
+        <div>
+          <div className="mono accent" style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 16 }}>
+            {BOOK.genre}
+          </div>
+          <h1 className="latin" style={{ fontSize: "clamp(40px, 5.6vw, 76px)", fontWeight: 200, fontStyle: "italic", letterSpacing: "-0.02em", lineHeight: 0.95, margin: "0 0 8px" }}>
+            <KineticText text={BOOK.title} by="char" step={28} delay={200} />
+          </h1>
+          <p className="muted" style={{ fontStyle: "italic", fontSize: 15, margin: "0 0 28px" }}>
+            {BOOK.subtitle}
+          </p>
+
+          <dl style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: "16px 24px", marginBottom: 36, paddingBottom: 28, borderBottom: "1px solid var(--rule-soft)" }}>
+            {[
+              ["著者",    BOOK.author],
+              ["訳者",    BOOK.translator],
+              ["出版社",  BOOK.publisher],
+              ["シリーズ", BOOK.series],
+              ["出版年",  BOOK.year],
+              ["頁数",    `${BOOK.pages}頁`],
+              ["ステータス", BOOK.status],
+              ["読了",    BOOK.readDate],
+            ].map(([k, v]) => (
+              <React.Fragment key={k}>
+                <dt className="mono muted" style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", paddingTop: 2 }}>{k}</dt>
+                <dd style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>{v}</dd>
+              </React.Fragment>
+            ))}
+          </dl>
+
+          {/* Rating */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <span className="mono muted" style={{ fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase" }}>Rating</span>
+            <div className="rating">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className={`dot ${i <= BOOK.rating ? "filled" : "empty"}`} />
+              ))}
+            </div>
+            <span className="mono muted" style={{ fontSize: 10 }}>{BOOK.rating} / 5</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Review */}
+      <section ref={reviewRef} className="rv" style={{ paddingTop: 72, paddingBottom: 64 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", maxWidth: 840, gap: 0 }}>
+          <div style={{ marginBottom: 40, display: "flex", alignItems: "baseline", gap: 16 }}>
+            <span className="mono accent" style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase" }}>§ Review</span>
+            <div className="rule-draw in" style={{ flex: 1, height: 1, background: "var(--rule)" }} />
+          </div>
+
+          <div className="review-prose">
+            {paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+          </div>
+        </div>
+      </section>
+
+      {/* Key passages */}
+      <section style={{ maxWidth: 840, paddingBottom: 72, borderBottom: "1px solid var(--rule)" }}>
+        <div style={{ marginBottom: 40, display: "flex", alignItems: "baseline", gap: 16 }}>
+          <span className="mono accent" style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase" }}>§ Passages</span>
+          <div className="rule-draw in" style={{ flex: 1, height: 1, background: "var(--rule)" }} />
+        </div>
+
+        {[
+          {
+            text: "Non ridere, non lugere, neque detestari, sed intelligere.",
+            trans: "馬鹿にしたり、嘆いたり、呪ったりせず、ただ理解せよ。",
+            loc: "Ethica, Pars III, Praefatio",
+          },
+          {
+            text: "Homo liber de nulla re minus, quam de morte cogitat, et ejus sapientia non mortis, sed vitae meditatio est.",
+            trans: "自由な人間は死についてもっとも考えない。かれの知恵は、死の省察ではなく、生の省察である。",
+            loc: "Ethica, Pars IV, Prop. LXVII",
+          },
+          {
+            text: "Beatitudo non est virtutis praemium, sed ipsa virtus.",
+            trans: "至福は徳の褒賞ではなく、徳そのものである。",
+            loc: "Ethica, Pars V, Prop. XLII",
+          },
+        ].map((q, i) => (
+          <div key={i} className="passage">
+            <em style={{ fontStyle: "italic", fontSize: 16, lineHeight: 1.65, display: "block", marginBottom: 10 }}>{q.text}</em>
+            <span style={{ fontSize: 14, fontStyle: "normal", color: "var(--ink-mute)", lineHeight: 1.6, display: "block", marginBottom: 8 }}>「{q.trans}」</span>
+            <cite>{q.loc}</cite>
+          </div>
+        ))}
+      </section>
+
+      {/* Related books */}
+      <section ref={relatedRef} className="rv" style={{ paddingTop: 64, paddingBottom: 160 }}>
+        <div style={{ marginBottom: 36, display: "flex", alignItems: "baseline", gap: 16 }}>
+          <span className="mono accent" style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase" }}>Related books</span>
+          <div className="rule-draw in" style={{ flex: 1, height: 1, background: "var(--rule)" }} />
+        </div>
+        <div className="related-grid">
+          {RELATED.map((b) => (
+            <a key={b.id} href={`#book-${b.id}`} className="related-card">
+              <div className="related-cover" style={{ background: b.color }}>
+                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: b.accent }} />
+                <div className="mono" style={{ position: "absolute", bottom: 8, left: 12, right: 8, fontSize: 9, lineHeight: 1.4, color: "rgba(255,255,255,0.75)", wordBreak: "break-word" }}>
+                  {b.title}
+                </div>
+              </div>
+              <p style={{ fontSize: 11, fontStyle: "italic", lineHeight: 1.3, margin: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{b.title}</p>
+              <p className="mono muted" style={{ fontSize: 10, margin: 0, letterSpacing: "0.04em" }}>{b.author}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <PageApp>
+      <BookDetailPage />
+    </PageApp>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+
+  <style>
+    @media (max-width: 820px) {
+      .book-hero-grid { grid-template-columns: 140px 1fr !important; gap: 28px !important; }
+    }
+    @media (max-width: 540px) {
+      .book-hero-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</body>
+</html>

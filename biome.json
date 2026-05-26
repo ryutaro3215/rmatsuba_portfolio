@@ -13,7 +13,8 @@
       "!**/dist",
       "!**/build",
       "!**/.env",
-      "!**/.turbo"
+      "!**/.turbo",
+      "!**/design_handoff"
     ]
   },
   "formatter": {

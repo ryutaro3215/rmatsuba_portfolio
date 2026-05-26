@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ja" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blog — R. Matsuba</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="shared.jsx"></script>
+  <script type="text/babel" src="page-app.jsx"></script>
+  <script type="text/babel">
+
+const { useState, useRef } = React;
+
+/* ── Sample posts (will be replaced with real CMS data) ── */
+const POSTS = [
+  {
+    slug: "spinoza-ethics",
+    title: "スピノザ『エチカ』を読む — 感情の幾何学的証明",
+    tags: ["哲学", "スピノザ", "読書"],
+    date: "2026-04-12",
+    excerpt: "感情を幾何学的に証明しようとした17世紀の哲学者の試み。その論理の構造と、現代における認知科学との接点を考える。",
+  },
+  {
+    slug: "42tokyo-review",
+    title: "42Tokyoを卒業して思うこと — ピアラーニングで得たもの",
+    tags: ["42Tokyo", "プログラミング", "学習"],
+    date: "2026-03-28",
+    excerpt: "2023年8月入学、2026年1月修了。2年半にわたる42Tokyoの学習を振り返り、ピアラーニングが思考に与えた影響について書く。",
+  },
+  {
+    slug: "diversity-org",
+    title: "組織における多様性と創造性 — イントラパーソナルダイバーシティの可能性",
+    tags: ["経営学", "組織論", "研究"],
+    date: "2026-03-15",
+    excerpt: "個人内の多様な知識・経験が組織の知識創造にどう寄与するか。卒業研究の中間報告としてこれまでの知見をまとめる。",
+  },
+  {
+    slug: "iwanami-love",
+    title: "岩波新書が好きな理由 — 学術と読みやすさの狭間で",
+    tags: ["読書", "岩波新書", "本"],
+    date: "2026-02-24",
+    excerpt: "週に一度は書店に行き、新書コーナーを眺める。なぜ私は岩波新書に惹かれるのか、その魅力を解剖する。",
+  },
+  {
+    slug: "rust-learning",
+    title: "Rustを学びはじめて — 所有権という概念の美しさ",
+    tags: ["Rust", "プログラミング", "学習"],
+    date: "2026-02-08",
+    excerpt: "メモリ安全性をコンパイル時に保証するRustの所有権システム。Cを書いてきた自分がRustに触れて感じた設計の哲学について。",
+  },
+  {
+    slug: "history-reading",
+    title: "歴史書を読むということ — 網野善彦と日本史の再発見",
+    tags: ["歴史", "読書", "網野善彦"],
+    date: "2026-01-19",
+    excerpt: "農耕民族という固定概念を崩した網野善彦の仕事。『日本社会の歴史』を再読しながら、歴史叙述の方法を考える。",
+  },
+  {
+    slug: "cs-fundamentals",
+    title: "コンピュータサイエンスの基礎を学ぶ意味",
+    tags: ["CS", "42Tokyo", "学習"],
+    date: "2025-12-10",
+    excerpt: "高水準言語しか書いたことがなかった自分が、Cでメモリと格闘した1年。低レイヤの理解がその後の学習にどう影響したか。",
+  },
+  {
+    slug: "cognitive-flexibility",
+    title: "認知的柔軟性とはなにか — 研究テーマの背景",
+    tags: ["認知科学", "心理学", "研究"],
+    date: "2025-11-22",
+    excerpt: "物事を多角的に捉える能力としての認知的柔軟性。その定義・測定方法・組織への応用可能性を文献から整理する。",
+  },
+];
+
+const ALL_TAGS = [...new Set(POSTS.flatMap((p) => p.tags))];
+
+function BlogPage() {
+  const [activeTag, setActiveTag] = useState(null);
+  const headerRef = useReveal(0.1);
+
+  const filtered = activeTag ? POSTS.filter((p) => p.tags.includes(activeTag)) : POSTS;
+
+  return (
+    <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 40px" }}>
+
+      {/* Page header */}
+      <header ref={headerRef} className="rv" style={{ paddingTop: 160, paddingBottom: 64 }}>
+        <div className="mono accent" style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 20 }}>
+          fol. 003 / Blog
+        </div>
+        <h1 className="latin" style={{ fontSize: "clamp(56px, 8vw, 120px)", fontWeight: 200, lineHeight: 0.92, margin: "0 0 20px", letterSpacing: "-0.025em" }}>
+          <KineticText text="Notebook." by="word" step={80} delay={200} />
+        </h1>
+        <p className="muted" style={{ fontSize: 15, lineHeight: 1.7, maxWidth: 560, margin: 0 }}>
+          日々の思考と学びの備忘録。哲学・経営学・コンピュータサイエンス・読書を中心に。
+        </p>
+        <div className="rule-draw in" style={{ width: "100%", height: 1, background: "var(--rule)", marginTop: 48 }} />
+      </header>
+
+      {/* Tag filter */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, paddingBottom: 48 }}>
+        <button
+          type="button"
+          onClick={() => setActiveTag(null)}
+          className="mono"
+          style={{
+            background: !activeTag ? "var(--ink)" : "transparent",
+            color: !activeTag ? "var(--bg)" : "var(--ink-mute)",
+            border: "1px solid var(--rule)",
+            padding: "6px 14px",
+            fontSize: 11,
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            cursor: "pointer",
+            borderRadius: 2,
+            transition: "none",
+          }}
+        >All</button>
+        {ALL_TAGS.map((tag) => (
+          <button
+            key={tag}
+            type="button"
+            onClick={() => setActiveTag(tag === activeTag ? null : tag)}
+            className="mono"
+            style={{
+              background: activeTag === tag ? "var(--ink)" : "transparent",
+              color: activeTag === tag ? "var(--bg)" : "var(--ink-mute)",
+              border: "1px solid var(--rule)",
+              padding: "6px 14px",
+              fontSize: 11,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              borderRadius: 2,
+              transition: "none",
+            }}
+          >#{tag}</button>
+        ))}
+      </div>
+
+      {/* Posts */}
+      <ol style={{ listStyle: "none", margin: 0, padding: 0, borderTop: "1px solid var(--rule)" }}>
+        {filtered.map((post, i) => (
+          <PostRow key={post.slug} post={post} index={i + 1} />
+        ))}
+      </ol>
+
+      {/* Footer note */}
+      <div className="mono muted" style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", padding: "40px 0 160px", textAlign: "center" }}>
+        — {filtered.length} entries —
+      </div>
+
+    </div>
+  );
+}
+
+function PostRow({ post, index }) {
+  const ref = useReveal(0.15);
+  const date = post.date.replace(/-/g, "/");
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <li ref={ref} className="rv">
+      <a
+        href={`#${post.slug}`}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "64px 1fr auto",
+          gap: 40,
+          padding: "36px 0",
+          borderBottom: "1px solid var(--rule-soft)",
+          position: "relative",
+          textDecoration: "none",
+          color: "inherit",
+        }}
+      >
+        {/* Progress line on hover */}
+        <div style={{
+          position: "absolute",
+          bottom: -1,
+          left: 0,
+          height: 1,
+          width: hovered ? "100%" : "0%",
+          background: "var(--accent)",
+          transition: "none",
+        }} />
+
+        {/* Index number */}
+        <div className="latin muted" style={{ fontSize: 44, fontStyle: "italic", fontWeight: 200, lineHeight: 1, paddingTop: 6 }}>
+          {String(index).padStart(2, "0")}
+        </div>
+
+        {/* Content */}
+        <div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+            {post.tags.map((tag) => (
+              <span key={tag} className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--accent)", paddingRight: 4 }}>
+                #{tag}
+              </span>
+            ))}
+          </div>
+          <h2 className="latin" style={{ fontSize: "clamp(18px, 2.4vw, 30px)", fontStyle: "italic", fontWeight: 300, letterSpacing: "-0.01em", margin: "0 0 14px", lineHeight: 1.2 }}>
+            {post.title}
+          </h2>
+          <p className="muted" style={{ fontSize: 14, lineHeight: 1.75, margin: 0, maxWidth: 640 }}>
+            {post.excerpt}
+          </p>
+        </div>
+
+        {/* Date */}
+        <div className="mono muted" style={{ fontSize: 11, letterSpacing: "0.15em", paddingTop: 8, whiteSpace: "nowrap" }}>
+          {date}
+        </div>
+      </a>
+    </li>
+  );
+}
+
+/* ── Mount ── */
+function App() {
+  return (
+    <PageApp>
+      <BlogPage />
+    </PageApp>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

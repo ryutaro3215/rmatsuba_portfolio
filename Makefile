@@ -1,4 +1,4 @@
-.PHONY: newpost
+.PHONY: newpost importpost
 
 newpost:
 	@read -p "Title: " title; \
@@ -12,6 +12,10 @@ newpost:
 	else \
 	  bun run apps/frontend/scripts/new_post.ts "$$title"; \
 	fi
+
+
+importpost:
+	bun run apps/frontend/scripts/import_posts.ts
 
 
 typebuild:

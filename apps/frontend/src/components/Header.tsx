@@ -1,182 +1,241 @@
 import { useEffect, useState } from "react";
-import { IoMdClose, IoMdMenu } from "react-icons/io";
 import { usePageContext } from "vike-react/usePageContext";
 import { ThemeToggle } from "./ThemeToggle";
-import "../style.css";
 
 export const navItems = [
-  { to: "/", label: "Home" },
-  { to: "/about", label: "About" },
-  { to: "/blogs", label: "Blog" },
-  { to: "/books", label: "Library" },
+  { to: "/", label: "Home", num: "I" },
+  { to: "/about", label: "About", num: "II" },
+  { to: "/blogs", label: "Blog", num: "III" },
+  { to: "/books", label: "Library", num: "IV" },
 ];
 
 export function Header() {
-  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const pageContext = usePageContext();
   const currentPath = pageContext.urlParsed.pathname;
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const onScroll = () => setScrolled(window.scrollY > 80);
     onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // bodyのスクロールロック
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [open]);
 
-  const getIsActive = (to: string) => {
-    if (to === "/") {
-      return currentPath === "/";
-    }
-    return currentPath.startsWith(to);
-  };
+  const isActive = (to: string) =>
+    to === "/" ? currentPath === "/" : currentPath.startsWith(to);
 
   return (
     <>
-      <header
-        className={[
-          "fixed top-0 right-0 left-0 z-50 transition-all duration-300",
-          scrolled
-            ? "bg-white/85 shadow-sm backdrop-blur-xl dark:bg-slate-950/85 dark:shadow-slate-800/30"
-            : "bg-transparent",
-        ].join(" ")}
-      >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          {/* Logo */}
-          <a href="/" className="group relative flex items-center gap-2">
-            <span className="font-bold font-source-serif-4 text-slate-900 text-xl tracking-tight transition-colors group-hover:text-slate-600 sm:text-2xl dark:text-white dark:group-hover:text-slate-300">
-              R.Matsuba
-            </span>
-            <span className="hidden font-light font-source-serif-4 text-slate-400 text-xl sm:inline dark:text-slate-500">
-              Blog
-            </span>
-          </a>
+      {/* biome-ignore lint/nursery/useSortedClasses: custom CSS classes, not Tailwind */}
+      <header className={`site-header${scrolled ? " condensed" : ""}`}>
+        {/* Logo */}
+        <a
+          href="/"
+          style={{ display: "flex", alignItems: "baseline", gap: 10 }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--serif)",
+              fontStyle: "italic",
+              fontWeight: 300,
+              fontSize: 22,
+              letterSpacing: "-0.01em",
+            }}
+          >
+            R. Matsuba
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--mono)",
+              fontSize: 10,
+              letterSpacing: "0.3em",
+              textTransform: "uppercase" as const,
+              opacity: 0.55,
+            }}
+          >
+            — Notebook
+          </span>
+        </a>
 
-          {/* Desktop nav */}
-          <nav className="hidden items-center gap-1 sm:flex">
-            {navItems.map((item) => {
-              const isActive = getIsActive(item.to);
-              return (
-                <a
-                  key={item.to}
-                  href={item.to}
-                  className={[
-                    "relative rounded-lg px-4 py-2 font-medium text-sm tracking-wide transition-all duration-200",
-                    isActive
-                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                      : "nav-link text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white",
-                  ].join(" ")}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-            <div className="ml-2 border-slate-200 border-l pl-2 dark:border-slate-700">
-              <ThemeToggle />
-            </div>
-          </nav>
-
-          {/* Mobile menu button */}
-          <div className="flex items-center gap-1 sm:hidden">
-            <ThemeToggle />
-            <button
-              className="rounded-lg p-2 text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-              onClick={() => setOpen(true)}
-              aria-label="Open menu"
-              type="button"
+        {/* Desktop nav (sm+) */}
+        <nav
+          className="header-desktop-nav"
+          style={{ display: "none", alignItems: "baseline", gap: 28 }}
+        >
+          {navItems.map((item) => (
+            <a
+              key={item.to}
+              href={item.to}
+              className="u-link"
+              style={{
+                display: "inline-flex",
+                alignItems: "baseline",
+                gap: 6,
+                fontFamily: "var(--mono)",
+                fontSize: 11,
+                letterSpacing: "0.22em",
+                textTransform: "uppercase" as const,
+                opacity: isActive(item.to) ? 1 : 0.65,
+                fontWeight: isActive(item.to) ? 600 : 400,
+              }}
             >
-              <IoMdMenu className="text-2xl" />
-            </button>
-          </div>
-        </div>
+              <span style={{ opacity: 0.5, fontSize: 9 }}>{item.num}</span>
+              {item.label}
+            </a>
+          ))}
+          <ThemeToggle />
+        </nav>
 
-        {/* 下部のアクセントライン */}
+        {/* Mobile controls */}
         <div
-          className={[
-            "h-px transition-opacity duration-300",
-            scrolled
-              ? "bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-100 dark:via-slate-700"
-              : "opacity-0",
-          ].join(" ")}
-        />
+          className="header-mobile-controls"
+          style={{ display: "flex", alignItems: "center", gap: 8 }}
+        >
+          <ThemeToggle />
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            aria-label="Open menu"
+            style={{
+              background: "none",
+              border: "1px solid currentColor",
+              color: "inherit",
+              padding: "6px 10px",
+              fontFamily: "var(--mono)",
+              fontSize: 10,
+              letterSpacing: "0.25em",
+              textTransform: "uppercase" as const,
+              cursor: "pointer",
+            }}
+          >
+            Menu
+          </button>
+        </div>
       </header>
 
       {/* Mobile overlay */}
       <div
-        className={[
-          "fixed inset-0 z-60 transition-opacity duration-300",
-          open
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0",
-        ].join(" ")}
+        role="dialog"
+        aria-modal="true"
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "var(--bg)",
+          zIndex: 100,
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? "auto" : "none",
+          transition: "opacity 500ms var(--ease)",
+          display: "flex",
+          flexDirection: "column",
+          padding: "22px",
+        }}
       >
-        <button
-          type="button"
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-          aria-label="Close menu"
-          onClick={() => setOpen(false)}
-        />
-        {/* Mobile drawer */}
-        <aside
-          className={[
-            "fixed top-0 right-0 z-60 flex h-full w-72 flex-col bg-white transition-transform duration-300 ease-out dark:bg-slate-900",
-            open ? "translate-x-0" : "translate-x-full",
-          ].join(" ")}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mobile menu"
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+          }}
         >
-          {/* Drawer header */}
-          <div className="flex items-center justify-between border-slate-100 border-b px-6 py-4 dark:border-slate-800">
-            <span className="font-bold font-source-serif-4 text-lg text-slate-900 dark:text-white">
-              Menu
-            </span>
-            <button
-              className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+          <span
+            style={{
+              fontFamily: "var(--serif)",
+              fontStyle: "italic",
+              fontSize: 22,
+              color: "var(--ink)",
+            }}
+          >
+            R. Matsuba
+          </span>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Close menu"
+            style={{
+              background: "none",
+              border: "1px solid var(--rule)",
+              color: "var(--ink)",
+              padding: "6px 10px",
+              fontFamily: "var(--mono)",
+              fontSize: 10,
+              letterSpacing: "0.25em",
+              textTransform: "uppercase" as const,
+              cursor: "pointer",
+            }}
+          >
+            Close
+          </button>
+        </div>
+        <nav
+          style={{
+            marginTop: 80,
+            display: "flex",
+            flexDirection: "column",
+            gap: 28,
+          }}
+        >
+          {navItems.map((item, i) => (
+            <a
+              key={item.to}
+              href={item.to}
               onClick={() => setOpen(false)}
-              type="button"
-              aria-label="Close menu"
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                gap: 18,
+                fontFamily: "var(--serif)",
+                fontStyle: "italic",
+                fontSize: 44,
+                fontWeight: 300,
+                color: "var(--ink)",
+                opacity: open ? 1 : 0,
+                transform: open ? "translateY(0)" : "translateY(20px)",
+                transition: `opacity 600ms var(--ease) ${i * 80 + 200}ms, transform 600ms var(--ease) ${i * 80 + 200}ms`,
+              }}
             >
-              <IoMdClose className="text-xl" />
-            </button>
-          </div>
-
-          {/* Drawer nav */}
-          <nav className="flex flex-col gap-1 px-4 pt-4">
-            {navItems.map((item) => {
-              const isActive = getIsActive(item.to);
-              return (
-                <a
-                  key={item.to}
-                  href={item.to}
-                  onClick={() => setOpen(false)}
-                  className={[
-                    "rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200",
-                    isActive
-                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white",
-                  ].join(" ")}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-          </nav>
-        </aside>
+              <span
+                style={{
+                  fontFamily: "var(--mono)",
+                  fontSize: 11,
+                  opacity: 0.5,
+                  letterSpacing: "0.2em",
+                }}
+              >
+                {item.num}
+              </span>
+              {item.label}
+            </a>
+          ))}
+        </nav>
+        <div
+          style={{
+            marginTop: "auto",
+            fontFamily: "var(--mono)",
+            color: "var(--ink-mute)",
+            fontSize: 11,
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+          }}
+        >
+          mrworks15@icloud.com
+        </div>
       </div>
+
+      <style>{`
+        @media (min-width: 640px) {
+          .header-desktop-nav { display: flex !important; }
+          .header-mobile-controls { display: none !important; }
+        }
+      `}</style>
     </>
   );
 }

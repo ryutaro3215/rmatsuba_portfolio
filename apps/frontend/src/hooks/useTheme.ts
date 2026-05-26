@@ -6,20 +6,18 @@ let currentTheme: Theme = getInitialTheme();
 const listeners = new Set<() => void>();
 
 function getInitialTheme(): Theme {
-  if (typeof window === "undefined") return "light";
+  if (typeof window === "undefined") return "dark";
   const stored = localStorage.getItem("theme");
   if (stored === "dark" || stored === "light") return stored;
-  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 }
 
 function applyTheme(theme: Theme) {
   currentTheme = theme;
   if (typeof window !== "undefined") {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }
   for (const listener of listeners) listener();

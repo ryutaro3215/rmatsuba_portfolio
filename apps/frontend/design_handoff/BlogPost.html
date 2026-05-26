@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="ja" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>スピノザ『エチカ』を読む — R. Matsuba</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    /* ── Article typography ── */
+    .prose { font-family: var(--serif); font-size: 17px; line-height: 1.95; color: var(--ink); }
+    .prose p { margin: 0 0 1.6em; text-indent: 1.5em; }
+    .prose p:first-of-type { text-indent: 0; }
+    .prose p:first-of-type::first-letter {
+      font-family: var(--serif); font-style: italic; font-weight: 200;
+      float: left; font-size: 5.2em; line-height: 0.82;
+      padding: 0.04em 0.1em 0 0; color: var(--accent);
+    }
+    .prose h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 300;
+      font-size: clamp(22px, 2.6vw, 32px); letter-spacing: -0.015em;
+      margin: 2.8em 0 0.8em; color: var(--ink); line-height: 1.15;
+    }
+    .prose h2::before {
+      content: attr(data-sec) " — ";
+      font-family: var(--mono); font-style: normal; font-size: 11px;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--accent); margin-right: 4px; vertical-align: middle;
+    }
+    .prose blockquote {
+      margin: 2.2em 0; padding: 0 0 0 28px;
+      border-left: 2px solid var(--accent); font-style: italic;
+      font-size: 20px; line-height: 1.65; font-weight: 300; color: var(--ink);
+    }
+    .prose blockquote cite {
+      display: block; font-style: normal;
+      font-family: var(--mono); font-size: 11px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-mute); margin-top: 12px;
+    }
+    .prose code {
+      font-family: var(--mono); font-size: 0.88em;
+      background: var(--bg-elev); border: 1px solid var(--rule);
+      padding: 0.1em 0.4em; border-radius: 2px; letter-spacing: 0;
+    }
+    .prose pre {
+      background: var(--bg-elev); border: 1px solid var(--rule);
+      padding: 22px 24px; margin: 1.8em 0; overflow-x: auto;
+      font-family: var(--mono); font-size: 13px; line-height: 1.7;
+      letter-spacing: 0.02em;
+    }
+    .prose pre code { background: none; border: none; padding: 0; }
+    .prose sup {
+      font-family: var(--mono); font-size: 9px;
+      color: var(--accent); vertical-align: super; letter-spacing: 0.1em;
+    }
+    .prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .prose a:hover { text-decoration: none; }
+    .prose hr {
+      border: none; height: 1px;
+      background: linear-gradient(to right, transparent, var(--rule), transparent);
+      margin: 3em auto; max-width: 120px;
+    }
+
+    /* Pull quote — margin note hybrid */
+    .pull { font-style: italic; font-weight: 300; font-size: 20px; line-height: 1.6;
+      color: var(--ink); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+      padding: 22px 0; margin: 2.4em 0; text-indent: 0 !important; }
+    .pull::before { content: "\201C"; color: var(--accent); font-size: 2em; line-height: 0; vertical-align: -0.4em; margin-right: 4px; }
+    .pull::after  { content: "\201D"; color: var(--accent); font-size: 2em; line-height: 0; vertical-align: -0.4em; margin-left: 4px; }
+
+    /* Footnotes */
+    .footnotes { border-top: 1px solid var(--rule); margin-top: 60px; padding-top: 28px; }
+    .footnotes ol { padding-left: 20px; }
+    .footnotes li { font-family: var(--mono); font-size: 11px; line-height: 1.7; color: var(--ink-mute); letter-spacing: 0.03em; margin-bottom: 10px; }
+
+    /* Reading progress bar */
+    .reading-bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform-origin: left; z-index: 60; }
+
+    /* ToC */
+    .toc { border: 1px solid var(--rule); padding: 20px 24px; margin-bottom: 48px; }
+    .toc-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 14px; }
+    .toc ol { padding-left: 18px; margin: 0; }
+    .toc li { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .toc a { color: var(--ink-mute); text-decoration: none; }
+    .toc a:hover { color: var(--accent); }
+
+    /* Sidebar layout on wide screens */
+    @media (min-width: 1140px) {
+      .article-grid { display: grid; grid-template-columns: 1fr 220px; gap: 80px; align-items: start; }
+      .article-aside { position: sticky; top: 100px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="shared.jsx"></script>
+  <script type="text/babel" src="page-app.jsx"></script>
+  <script type="text/babel">
+
+const { useState, useEffect, useRef } = React;
+
+/* ── Reading progress ── */
+function ReadingProgress() {
+  const [prog, setProgress] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const h = document.documentElement;
+      const t = Math.min(1, h.scrollTop / (h.scrollHeight - h.clientHeight));
+      setProgress(t);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return <div className="reading-bar" style={{ transform: `scaleX(${prog})` }} />;
+}
+
+/* ── Blog post content ── */
+const POST = {
+  slug: "spinoza-ethics",
+  title: "スピノザ『エチカ』を読む\n— 感情の幾何学的証明",
+  title_en: "Reading Spinoza's Ethics: The Geometric Proof of Emotion",
+  date: "2026/04/12",
+  tags: ["哲学", "スピノザ", "読書"],
+  readingTime: 12,
+  lede: "感情を幾何学的に証明しようとした17世紀の哲学者の試み。その論理の構造と、現代における認知科学との接点を考える。",
+};
+
+const PREV = { slug: "iwanami-love",  title: "岩波新書が好きな理由" };
+const NEXT = { slug: "42tokyo-review", title: "42Tokyoを卒業して思うこと" };
+
+function BlogPostPage() {
+  const headerRef = useReveal(0.1);
+
+  return (
+    <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 40px" }}>
+      <ReadingProgress />
+
+      {/* Back link */}
+      <div ref={headerRef} className="rv" style={{ paddingTop: 120 }}>
+        <a href="Blog.html" className="mono muted" style={{
+          fontSize: 11, letterSpacing: "0.25em", textTransform: "uppercase",
+          display: "inline-flex", alignItems: "center", gap: 8,
+          textDecoration: "none",
+        }}>
+          <span style={{ color: "var(--accent)" }}>←</span> Blog
+        </a>
+
+        {/* Article header */}
+        <header style={{ marginTop: 48, paddingBottom: 48, borderBottom: "1px solid var(--rule)" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+            {POST.tags.map((t) => (
+              <span key={t} className="mono" style={{ fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--accent)" }}>#{t}</span>
+            ))}
+          </div>
+          <h1 className="latin" style={{
+            fontSize: "clamp(32px, 5.2vw, 72px)", fontWeight: 200, fontStyle: "italic",
+            lineHeight: 1.05, letterSpacing: "-0.02em", margin: "0 0 32px",
+            whiteSpace: "pre-line",
+          }}>
+            <KineticText text="スピノザ『エチカ』を読む" by="word" step={50} delay={200} />
+            <br />
+            <span className="muted">
+              <KineticText text="— 感情の幾何学的証明" by="word" step={55} delay={700} />
+            </span>
+          </h1>
+          <p className="muted" style={{ fontStyle: "italic", fontSize: 18, lineHeight: 1.65, maxWidth: 680, margin: "0 0 28px" }}>
+            {POST.lede}
+          </p>
+          <div style={{ display: "flex", gap: 28, alignItems: "baseline", flexWrap: "wrap" }}>
+            <span className="mono muted" style={{ fontSize: 11, letterSpacing: "0.15em" }}>{POST.date}</span>
+            <span className="mono muted" style={{ fontSize: 11, letterSpacing: "0.15em" }}>約 {POST.readingTime} 分</span>
+            <span className="mono muted" style={{ fontSize: 11, letterSpacing: "0.15em", fontStyle: "italic" }}>{POST.title_en}</span>
+          </div>
+        </header>
+      </div>
+
+      {/* Article body */}
+      <div className="article-grid" style={{ paddingTop: 56, paddingBottom: 120 }}>
+        {/* Main article */}
+        <article>
+          <div className="toc">
+            <div className="toc-title">目次 / Contents</div>
+            <ol>
+              <li><a href="#s1">「幾何学的方法」とは何か</a></li>
+              <li><a href="#s2">感情の三分類と隷属</a></li>
+              <li><a href="#s3">知の三段階と「第三種知識」</a></li>
+              <li><a href="#s4">「神即自然」と決定論</a></li>
+              <li><a href="#s5">現代認知科学との接点</a></li>
+            </ol>
+          </div>
+
+          <div className="prose">
+            <p>
+              スピノザが1677年に書き上げた『エチカ』は、その書名（Ethica Ordine Geometrico Demonstrata — 幾何学的秩序に従って論証された倫理学）が示す通り、ユークリッド幾何学の様式——定義・公理・定理・証明——を哲学に持ち込んだ異様な書物だ。感情を、まるで三角形の内角の和を証明するように、論理的に展開しようとするその試みは、読む者に奇妙な冷たさと、それと同時に底知れない知的興奮をもたらす。
+            </p>
+            <p>
+              私がスピノザを手に取ったのは、サイトの冒頭に置いているあの一文——<em>Non ridere, non lugere, neque detestari, sed intelligere</em>（馬鹿にしたり、嘆いたり、呪ったりせず、ただ理解せよ）——が、第三部の序文に置かれた言葉だと知ったからだ。この一文を理解するためには、『エチカ』全体の構造を読む必要がある。
+            </p>
+
+            <h2 data-sec="§01" id="s1">「幾何学的方法」とは何か</h2>
+            <p>
+              スピノザがなぜ幾何学的方法を選んだのか、という問いは単純ではない。17世紀の哲学的文脈でいえば、デカルトの方法論的懐疑が前景にある。デカルトは疑いえない基盤から出発し、明晰判明な観念だけを真とした。スピノザはその精神を引き継ぎながら、さらに過激な方向へ踏み込む。
+            </p>
+
+            <blockquote>
+              自然は特定の目的のために何かをなすのではなく、ただ永遠なる必然性と完全性から自己を展開するのである。
+              <cite>— Spinoza, Ethica, Part I, App.</cite>
+            </blockquote>
+
+            <p>
+              つまり幾何学的方法とは、感情や道徳を「外から」評価するのではなく、自然の必然的な産物として記述しようとする試みだ。嫉妬も愛も怒りも、重力と同じく、一定の条件のもとで必然的に生じる。それを「悪い感情だ」と嘆くのは、正三角形を「内角の和が180度なのはおかしい」と非難するようなものだ、とスピノザは言う。
+            </p>
+
+            <h2 data-sec="§02" id="s2">感情の三分類と隷属</h2>
+            <p>
+              第三部と第四部は感情論の核心を成す。スピノザは感情（affect, affectio）を三つに分類する。喜び（laetitia）、悲しみ（tristitia）、欲望（cupiditas）の三つだ。愛、憎しみ、嫉妬、恐怖、希望——これらすべては、この三分類の変種として論証される。
+            </p>
+
+            <p className="pull">
+              人間は感情の奴隷である。理性は感情に反してではなく、感情の中に入り込むことによってのみ、感情を制御できる。
+            </p>
+
+            <p>
+              「感情の隷属」という第四部の表題が示すように、人間は多くの場合、自分の感情に支配されている。そして感情は必ず外的な原因から生じる——それがスピノザの診断だ。外的なものに翻弄されるかぎり、人は受動的であり、自由ではない。
+            </p>
+
+            <h2 data-sec="§03" id="s3">知の三段階と「第三種知識」</h2>
+            <p>
+              スピノザは認識の段階を三つに分ける。第一種知識（opinioまたはimaginatio）は感覚的・経験的な知識。第二種知識（ratio）は共通概念に基づく理性的認識。そして第三種知識（scientia intuitiva）は、個物を神の属性から直接把握する直観的知識だ。
+            </p>
+            <p>
+              第三種知識に至ったとき、人は個々の出来事を永遠の観点（sub specie aeternitatis）から見るようになる。「神の知的愛」——これが自由の極点だ。恐怖や悲しみは過去や未来に引っ張られる受動的感情だが、第三種知識は現在の永遠性の中で生きる能動的喜びへとつながる。
+            </p>
+
+            <h2 data-sec="§04" id="s4">「神即自然」と決定論</h2>
+            <p>
+              スピノザ哲学の根幹にある命題は <em>Deus sive Natura</em>（神すなわち自然）だ。神は自然の外に立つ創造者ではなく、自然そのものが神の唯一の実体であり、思惟と延長はその二つの属性にすぎない。この汎神論的一元論は当時の宗教的文脈では危険極まりないものだった。
+            </p>
+
+            <blockquote>
+              自由とは自分自身の本性の必然性だけによって存在し、自分自身によってのみ行動するように決定されることである。
+              <cite>— Spinoza, Ethica, Part I, Def. 7</cite>
+            </blockquote>
+
+            <p>
+              徹底した決定論の中で「自由」を語るスピノザの逆説は深い。自由とは、外的強制からではなく、自己の本性の必然性から行為することだ。石が落ちるのは石の本性であり、理性ある人間が理性から行為するのもその本性——両者は構造的に同じだが、後者だけが真の意味での「自由」とスピノザは呼ぶ。
+            </p>
+
+            <h2 data-sec="§05" id="s5">現代認知科学との接点</h2>
+            <p>
+              ダマシオの『デカルトの誤り』は、感情と理性を対立物と見る西洋哲学的伝統を批判し、感情が合理的決定に不可欠であることを示した。皮肉なことに、この議論はスピノザの直観に近い——ダマシオ自身、それを「スピノザの先見」と呼んでいる。
+            </p>
+            <p>
+              また認知的柔軟性研究の文脈でいえば、スピノザが「第二種知識」と呼んだ共通概念による理性的把握は、認知的再評価（cognitive reappraisal）の構造と重なる。感情を抑圧するのではなく、その生起の必然的構造を理解することで感情との関係を変える——これはほとんど現代の認知行動療法の語彙だ。
+            </p>
+            <p>
+              『エチカ』を読むのは骨が折れる。幾何学的表記は読者を選ぶし、いまだ理解しきれていない箇所も多い。それでも、「笑ったり嘆いたりせず、ただ理解せよ」という言葉が、私にとって知的営みの根本的な姿勢として残り続けている。
+            </p>
+
+            <hr />
+
+            <div className="footnotes">
+              <p className="mono muted" style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 16 }}>Footnotes / 脚注</p>
+              <ol>
+                <li>原文ラテン語: Ethica Ordine Geometrico Demonstrata. 邦訳は畠中尚志訳（岩波書店）を参考にしつつ、一部改訳。</li>
+                <li>ダマシオ, A. (1994). Descartes' Error: Emotion, Reason and the Human Brain. 和訳『デカルトの誤り』(田中三彦訳, ちくま学芸文庫).</li>
+                <li>Damasio, A. (2003). Looking for Spinoza: Joy, Sorrow, and the Feeling Brain.「スピノザを探して」と訳されることもある。</li>
+                <li>認知的再評価（cognitive reappraisal）: Gross, J. J. (1998). Antecedent- and response-focused emotion regulation. Journal of Personality and Social Psychology, 74(1).</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+
+        {/* Aside (visible on wide screens) */}
+        <aside className="article-aside">
+          <div style={{ border: "1px solid var(--rule)", padding: "20px 22px", marginBottom: 20 }}>
+            <div className="mono muted" style={{ fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid var(--rule-soft)" }}>
+              Article info
+            </div>
+            {[
+              ["Date",    POST.date],
+              ["Reading", `≈ ${POST.readingTime} min`],
+              ["Filed",   POST.tags.join(" · ")],
+            ].map(([k, v]) => (
+              <div key={k} style={{ marginBottom: 14 }}>
+                <div className="mono muted" style={{ fontSize: 9, letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: 4 }}>{k}</div>
+                <div className="mono" style={{ fontSize: 12, letterSpacing: "0.04em" }}>{v}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Author */}
+          <div style={{ border: "1px solid var(--rule)", padding: "20px 22px" }}>
+            <div className="mono muted" style={{ fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 14, paddingBottom: 12, borderBottom: "1px solid var(--rule-soft)" }}>
+              Author
+            </div>
+            <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12 }}>
+              <img src="assets/profile.jpg" alt="" style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", filter: "grayscale(0.4)" }} />
+              <div>
+                <div style={{ fontSize: 12, fontStyle: "italic" }}>Ryutaro Matsuba</div>
+                <div className="mono muted" style={{ fontSize: 10, letterSpacing: "0.06em" }}>松場 龍太郎</div>
+              </div>
+            </div>
+            <p className="muted" style={{ fontSize: 12, lineHeight: 1.6, margin: 0 }}>
+              東京理科大学経営学部。研究・読書・コーディングのノートを公開しています。
+            </p>
+          </div>
+        </aside>
+      </div>
+
+      {/* Prev/Next navigation */}
+      <NavPrevNext prev={PREV} next={NEXT} />
+
+    </div>
+  );
+}
+
+function NavPrevNext({ prev, next }) {
+  const ref = useReveal(0.1);
+  return (
+    <nav ref={ref} className="rv" style={{
+      borderTop: "1px solid var(--rule)",
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: 0,
+      marginBottom: 160,
+    }}>
+      {prev ? (
+        <a href={`Blog.html#${prev.slug}`} style={{ padding: "36px 0 36px 0", borderRight: "1px solid var(--rule)", textDecoration: "none", color: "inherit" }}>
+          <div className="mono muted" style={{ fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: 12 }}>
+            <span className="accent">←</span> Prev
+          </div>
+          <div className="latin" style={{ fontSize: "clamp(15px, 2vw, 22px)", fontStyle: "italic", fontWeight: 300, lineHeight: 1.25 }}>
+            {prev.title}
+          </div>
+        </a>
+      ) : <div />}
+      {next ? (
+        <a href={`Blog.html#${next.slug}`} style={{ padding: "36px 0 36px 40px", textDecoration: "none", color: "inherit", textAlign: "right" }}>
+          <div className="mono muted" style={{ fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: 12 }}>
+            Next <span className="accent">→</span>
+          </div>
+          <div className="latin" style={{ fontSize: "clamp(15px, 2vw, 22px)", fontStyle: "italic", fontWeight: 300, lineHeight: 1.25 }}>
+            {next.title}
+          </div>
+        </a>
+      ) : <div />}
+    </nav>
+  );
+}
+
+function App() {
+  return (
+    <PageApp>
+      <BlogPostPage />
+    </PageApp>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-import { IoMdMoon, IoMdSunny } from "react-icons/io";
 import { useTheme } from "../hooks/useTheme";
 
 export function ThemeToggle() {
@@ -10,9 +9,19 @@ export function ThemeToggle() {
       aria-label={
         theme === "dark" ? "ライトモードに切り替え" : "ダークモードに切り替え"
       }
-      className="rounded-full p-2 text-2xl transition-all duration-200 hover:rotate-12 hover:bg-slate-200 active:scale-90 dark:hover:bg-slate-700"
+      style={{
+        background: "none",
+        border: "none",
+        color: "inherit",
+        cursor: "pointer",
+        fontFamily: "var(--mono)",
+        fontSize: 12,
+        padding: "4px 6px",
+        opacity: 0.7,
+        letterSpacing: "0.1em",
+      }}
     >
-      {theme === "dark" ? <IoMdSunny /> : <IoMdMoon />}
+      {theme === "dark" ? "◑" : "◐"}
     </button>
   );
 }
