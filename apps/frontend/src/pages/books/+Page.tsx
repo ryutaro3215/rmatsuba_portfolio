@@ -4,24 +4,18 @@ import {
   BookGenres,
   type GenreSlug,
 } from "@mysite/shared";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useData } from "vike-react/useData";
 import { usePageContext } from "vike-react/usePageContext";
 import { BookCard } from "../../components/BookCard";
-import { useStaggerChildren } from "../../hooks/useStaggerChildren";
 import "../../style.css";
 
 const Library = () => {
   const { books } = useData<{ books: Book[] }>();
   const { urlParsed } = usePageContext();
-  // ジャンルフィルタはクライアントサイドのみで管理（Vikeのnavigate()を使うとdata loaderが再実行されるため）
   const [selectedGenreSlugs, setSelectedGenreSlugs] = useState<string[]>(
     urlParsed.searchAll.genre || [],
   );
-
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(false);
 
   const genreList = BookGenreSchema.options.map((label) => {
     const slug = (Object.keys(BookGenres) as GenreSlug[]).find(
@@ -30,48 +24,19 @@ const Library = () => {
     return { label, slug };
   });
 
-  const checkScroll = useCallback(() => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setShowLeftArrow(scrollLeft > 0);
-      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
-    }
-  }, []);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (el) {
-      checkScroll();
-      el.addEventListener("scroll", checkScroll);
-      window.addEventListener("resize", checkScroll);
-      return () => {
-        el.removeEventListener("scroll", checkScroll);
-        window.removeEventListener("resize", checkScroll);
-      };
-    }
-  }, [checkScroll]);
-
-  const scrollBy = (offset: number) => {
-    scrollRef.current?.scrollBy({ left: offset, behavior: "smooth" });
-  };
-
   const toggleGenre = (slug: string) => {
     setSelectedGenreSlugs((prev) => {
       const next = prev.includes(slug)
         ? prev.filter((g) => g !== slug)
         : [...prev, slug];
-
-      // URLをVike navigation無しで更新（data loader再実行を防ぐ）
-      const newParams = new URLSearchParams();
-      for (const genre of next) {
-        newParams.append("genre", genre);
-      }
-      const queryString = newParams.toString();
-      const newUrl = queryString
-        ? `${urlParsed.pathname}?${queryString}`
-        : urlParsed.pathname;
-      window.history.replaceState({}, "", newUrl);
-
+      const params = new URLSearchParams();
+      for (const g of next) params.append("genre", g);
+      const qs = params.toString();
+      window.history.replaceState(
+        {},
+        "",
+        qs ? `${urlParsed.pathname}?${qs}` : urlParsed.pathname,
+      );
       return next;
     });
   };
@@ -79,124 +44,179 @@ const Library = () => {
   const filteredBooks =
     selectedGenreSlugs.length === 0
       ? books
-      : books.filter((book) => {
-          return selectedGenreSlugs.some(
+      : books.filter((book) =>
+          selectedGenreSlugs.some(
             (slug) => BookGenres[slug as GenreSlug] === book.genre,
-          );
-        });
+          ),
+        );
 
-  const genreKey = selectedGenreSlugs.join(",");
-  const gridRef = useStaggerChildren<HTMLElement>({
-    staggerDelay: 40,
-  });
+  const genreLabel =
+    selectedGenreSlugs.length === 0
+      ? "All"
+      : selectedGenreSlugs.map((s) => BookGenres[s as GenreSlug]).join(", ");
 
   return (
-    <div className="mx-auto w-full">
-      <section className="mx-auto max-w-7xl px-6 pt-32 pb-8 sm:pt-40">
-        <h1 className="reveal-up revealed font-bold font-source-serif-4 text-4xl text-slate-900 tracking-tight sm:text-5xl lg:text-6xl dark:text-white">
-          Library
+    <div>
+      {/* Page header */}
+      <section
+        style={{
+          maxWidth: 1320,
+          margin: "0 auto",
+          padding: "140px 40px 60px",
+        }}
+      >
+        <div
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: 11,
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            color: "var(--accent)",
+            marginBottom: 16,
+          }}
+        >
+          fol. 004 / Library
+        </div>
+        <h1
+          style={{
+            fontFamily: "var(--serif)",
+            fontStyle: "italic",
+            fontWeight: 200,
+            fontSize: "clamp(56px, 8vw, 120px)",
+            letterSpacing: "-0.022em",
+            lineHeight: 1,
+            margin: "0 0 40px",
+          }}
+        >
+          Bibliotheca.
         </h1>
-        <p className="reveal-up revealed reveal-delay-100 mt-3 text-base text-slate-600 leading-relaxed dark:text-slate-400">
-          読んだ本の記録
-        </p>
+        <div className="rule-draw in" />
       </section>
 
-      <div className="sticky top-[64px] z-10 bg-white/80 py-4 backdrop-blur-md dark:bg-slate-900/80">
-        <div className="group relative mx-auto max-w-7xl px-6">
-          <div
-            className={`pointer-events-none absolute top-0 bottom-0 left-6 z-20 flex items-center transition-opacity duration-300 ${showLeftArrow ? "opacity-100" : "opacity-0"}`}
+      {/* Genre filter (sticky) */}
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 40,
+          background: "color-mix(in oklch, var(--bg) 85%, transparent)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          borderBottom: "1px solid var(--rule-soft)",
+          padding: "12px 40px",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1320,
+            margin: "0 auto",
+            display: "flex",
+            gap: 8,
+            flexWrap: "wrap",
+            overflowX: "auto",
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedGenreSlugs([]);
+              window.history.replaceState({}, "", urlParsed.pathname);
+            }}
+            style={{
+              fontFamily: "var(--mono)",
+              fontSize: 11,
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              border: "1px solid var(--rule)",
+              borderRadius: 2,
+              padding: "5px 12px",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+              background:
+                selectedGenreSlugs.length === 0 ? "var(--ink)" : "transparent",
+              color:
+                selectedGenreSlugs.length === 0
+                  ? "var(--bg)"
+                  : "var(--ink-mute)",
+              transition: "none",
+            }}
           >
-            <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent dark:from-slate-900" />
-            <button
-              type="button"
-              onClick={() => scrollBy(-200)}
-              className="pointer-events-auto relative ml-1 rounded-full border border-slate-200 bg-white/90 p-1 shadow-md transition-transform hover:scale-110 dark:border-slate-700 dark:bg-slate-800"
-              aria-label="Scroll left"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-slate-600 dark:text-slate-400"
+            All
+          </button>
+          {genreList.map(({ label, slug }) => {
+            if (!slug) return null;
+            const isActive = selectedGenreSlugs.includes(slug);
+            const count = books.filter((b) => b.genre === label).length;
+            return (
+              <button
+                key={slug}
+                type="button"
+                onClick={() => toggleGenre(slug)}
+                style={{
+                  fontFamily: "var(--mono)",
+                  fontSize: 11,
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  border: "1px solid var(--rule)",
+                  borderRadius: 2,
+                  padding: "5px 12px",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  background: isActive ? "var(--ink)" : "transparent",
+                  color: isActive ? "var(--bg)" : "var(--ink-mute)",
+                  transition: "none",
+                }}
               >
-                <title>Previous</title>
-                <path d="m15 18-6-6 6-6" />
-              </svg>
-            </button>
-          </div>
-
-          <div
-            className={`pointer-events-none absolute top-0 right-6 bottom-0 z-20 flex items-center transition-opacity duration-300 ${showRightArrow ? "opacity-100" : "opacity-0"}`}
-          >
-            <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent dark:from-slate-900" />
-            <button
-              type="button"
-              onClick={() => scrollBy(200)}
-              className="pointer-events-auto relative mr-1 rounded-full border border-slate-200 bg-white/90 p-1 shadow-md transition-transform hover:scale-110 dark:border-slate-700 dark:bg-slate-800"
-              aria-label="Scroll right"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-slate-600 dark:text-slate-400"
-              >
-                <title>Next</title>
-                <path d="m9 18 6-6-6-6" />
-              </svg>
-            </button>
-          </div>
-
-          <div
-            ref={scrollRef}
-            className="no-scrollbar custom-scrollbar flex flex-nowrap gap-2 overflow-x-auto scroll-smooth pb-2"
-          >
-            {genreList.map(({ label, slug }) => {
-              if (!slug) return null;
-              const isActive = selectedGenreSlugs.includes(slug);
-
-              return (
-                <button
-                  key={slug}
-                  type="button"
-                  onClick={() => toggleGenre(slug)}
-                  className={`whitespace-nowrap rounded-full px-4 py-1.5 font-medium text-sm transition-all active:scale-95 ${
-                    isActive
-                      ? "bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-900"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+                {label}
+                <span style={{ opacity: 0.55, marginLeft: 6, fontSize: 10 }}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
+      {/* Status bar */}
+      <div
+        style={{
+          maxWidth: 1320,
+          margin: "0 auto",
+          padding: "20px 40px 12px",
+          fontFamily: "var(--mono)",
+          fontSize: 11,
+          letterSpacing: "0.15em",
+          textTransform: "uppercase",
+          color: "var(--ink-mute)",
+        }}
+      >
+        {genreLabel} — {filteredBooks.length} volumes
+      </div>
+
+      {/* Book grid */}
       <section
-        ref={gridRef}
-        key={genreKey}
-        className="mx-auto mt-8 mb-20 grid max-w-7xl grid-cols-2 gap-3 px-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+        style={{
+          maxWidth: 1320,
+          margin: "0 auto",
+          padding: "8px 40px 120px",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+          gap: 16,
+        }}
       >
         {filteredBooks.map((book) => (
-          <div key={book.id} className="stagger-child">
-            <BookCard {...book} />
-          </div>
+          <BookCard key={book.id} {...book} />
         ))}
       </section>
+
+      <style>{`
+        @media (max-width: 720px) {
+          section { padding-left: 22px !important; padding-right: 22px !important; }
+          div[style*="padding: 140px 40px"] { padding-left: 22px !important; padding-right: 22px !important; }
+          div[style*="padding: 20px 40px"] { padding-left: 22px !important; padding-right: 22px !important; }
+          div[style*="padding: 12px 40px"] { padding-left: 22px !important; padding-right: 22px !important; }
+        }
+      `}</style>
     </div>
   );
 };

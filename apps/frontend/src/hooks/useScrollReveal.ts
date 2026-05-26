@@ -1,16 +1,12 @@
 import { useEffect, useRef } from "react";
 
-interface UseScrollRevealOptions {
-  threshold?: number;
-  rootMargin?: string;
-  once?: boolean;
-}
-
-export function useScrollReveal<T extends HTMLElement = HTMLElement>({
+/**
+ * Adds `.in` class to the element when it enters the viewport.
+ * Element should have class `rv` (or `rule-draw`) in CSS.
+ */
+export function useScrollReveal<T extends HTMLElement = HTMLElement>(
   threshold = 0.15,
-  rootMargin = "0px 0px -40px 0px",
-  once = true,
-}: UseScrollRevealOptions = {}) {
+) {
   const ref = useRef<T>(null);
 
   useEffect(() => {
@@ -18,25 +14,61 @@ export function useScrollReveal<T extends HTMLElement = HTMLElement>({
     if (!el) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      el.classList.add("revealed");
+      el.classList.add("in");
       return;
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add("revealed");
-          if (once) observer.unobserve(el);
-        } else if (!once) {
-          el.classList.remove("revealed");
+    let fired = false;
+    const fire = () => {
+      if (fired) return;
+      fired = true;
+      el.classList.add("in");
+      setTimeout(() => {
+        el.style.transition = "none";
+        el.style.opacity = "1";
+        el.style.transform = "none";
+      }, 1100);
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            fire();
+            io.unobserve(e.target);
+          }
         }
       },
-      { threshold, rootMargin },
+      { threshold, rootMargin: "0px 0px -8% 0px" },
     );
+    io.observe(el);
 
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold, rootMargin, once]);
+    const tryFire = () => {
+      if (fired) return;
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.92 && r.bottom > 0) fire();
+    };
+
+    const t1 = setTimeout(tryFire, 80);
+    const t2 = setTimeout(tryFire, 600);
+    const t3 = setTimeout(() => {
+      if (!fired) fire();
+    }, 4000);
+
+    const onScroll = () => {
+      tryFire();
+      if (fired) window.removeEventListener("scroll", onScroll);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      io.disconnect();
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [threshold]);
 
   return ref;
 }

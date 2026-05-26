@@ -5,16 +5,12 @@ export default function Head() {
       <link rel="icon" href={favicon} />
       <noscript>
         <style>{`
-          .reveal-up.reveal-up, .reveal-scale.reveal-scale,
-          .reveal-left.reveal-left, .reveal-right.reveal-right,
-          .stagger-child.stagger-child, .reveal-divider.reveal-divider,
-          .hero-entrance.hero-entrance {
-            opacity: 1;
-            transform: none;
-            filter: none;
-            animation: none;
-            transition: none;
+          .kt-word, .kt-char, .rv {
+            opacity: 1 !important;
+            transform: none !important;
+            filter: none !important;
           }
+          .rule-draw { transform: scaleX(1) !important; }
         `}</style>
       </noscript>
       <script
@@ -23,13 +19,12 @@ export default function Head() {
           __html: `
             (function() {
               try {
-                const storedTheme = localStorage.getItem('theme');
-                const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (storedTheme === 'dark' || (!storedTheme && supportDarkMode)) {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
+                var stored = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var theme = stored === 'light' || stored === 'dark'
+                  ? stored
+                  : (prefersDark ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
               } catch (e) {}
             })();
           `,

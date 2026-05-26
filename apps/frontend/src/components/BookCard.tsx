@@ -1,12 +1,8 @@
 import { type Book, BookGenres, type GenreSlug } from "@mysite/shared";
 import { getBookCoverUrl } from "../app/importImages";
-import { genreTheme } from "../data/genreTheme";
 
 export const BookCard = (data: Book) => {
-  const coverUrl = getBookCoverUrl(data.cover);
-
-  const genreBgColor = genreTheme[data.genre]?.bgColor || "bg-slate-200";
-  const genreTextColor = genreTheme[data.genre]?.textColor || "text-slate-900";
+  const coverUrl = data.cover ? getBookCoverUrl(data.cover) : null;
 
   const genreSlug = (Object.keys(BookGenres) as GenreSlug[]).find(
     (key) => BookGenres[key] === data.genre,
@@ -15,40 +11,100 @@ export const BookCard = (data: Book) => {
   const handleGenreClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (genreSlug) {
-      window.location.href = `/books?genre=${genreSlug}`;
-    }
+    if (genreSlug) window.location.href = `/books?genre=${genreSlug}`;
   };
 
   return (
-    <a href={`/books/${data.id}`} className="group h-full">
-      <article className="flex h-full flex-col rounded-xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
-        <div className="overflow-hidden rounded-t-xl bg-slate-50 p-3 dark:bg-slate-800">
-          <img
-            src={coverUrl}
-            alt={`Cover of ${data.title}`}
-            loading="lazy"
-            // 画像サイズを一定に保つために aspect-ratio などを指定しておくと、
-            // public 移行後のレイアウトシフトを防げます
-            className="mx-auto block aspect-[2/3] object-cover transition-transform duration-200 group-hover:scale-105"
-          />
+    <a
+      href={`/books/${data.id}`}
+      className="book-card-link"
+      style={{ display: "block" }}
+    >
+      <article
+        style={{
+          border: "1px solid var(--rule)",
+          transition:
+            "transform 400ms var(--ease), border-color 400ms var(--ease)",
+          cursor: "pointer",
+        }}
+      >
+        {/* Cover */}
+        <div
+          style={{
+            aspectRatio: "2/3",
+            background: "var(--rule)",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          {coverUrl && (
+            <img
+              src={coverUrl}
+              alt={data.title}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          )}
         </div>
-        <div className="flex flex-1 flex-col gap-1.5 p-3">
-          <h3 className="line-clamp-1 font-bold text-slate-900 text-sm dark:text-white">
-            {data.title}
-          </h3>
-          <p className="text-slate-500 text-xs dark:text-slate-400">
-            {data.author}
-          </p>
-          <button
-            type="button"
-            className={`${genreBgColor} ${genreTextColor} mt-auto w-fit max-w-full cursor-pointer truncate rounded-full px-2 py-0.5 text-xs transition-all hover:brightness-95`}
-            onClick={handleGenreClick}
+
+        {/* Metadata */}
+        <div style={{ padding: "10px 12px 12px" }}>
+          <div
+            style={{
+              fontFamily: "var(--serif)",
+              fontSize: 11,
+              lineHeight: 1.35,
+              marginBottom: 4,
+              overflow: "hidden",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+            }}
           >
-            # {data.genre}
-          </button>
+            {data.title}
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--mono)",
+              fontSize: 10,
+              color: "var(--ink-mute)",
+            }}
+          >
+            {data.author}
+          </div>
+          {data.genre && (
+            <button
+              type="button"
+              onClick={handleGenreClick}
+              style={{
+                marginTop: 6,
+                fontFamily: "var(--mono)",
+                fontSize: 9,
+                letterSpacing: "0.1em",
+                color: "var(--ink-mute)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+              }}
+            >
+              # {data.genre}
+            </button>
+          )}
         </div>
       </article>
+
+      <style>{`
+        .book-card-link:hover article {
+          transform: translateY(-4px);
+          border-color: var(--accent) !important;
+        }
+      `}</style>
     </a>
   );
 };

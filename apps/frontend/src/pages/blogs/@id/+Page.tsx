@@ -5,11 +5,7 @@ import "../../../style.css";
 
 const BlogDetail = () => {
   const post = useData<ParsedPost>();
-  return (
-    <div className="mx-auto max-w-7xl px-6 pt-24">
-      {post && <DetailBlogCard {...post} />}
-    </div>
-  );
+  return <div>{post && <DetailBlogCard {...post} />}</div>;
 };
 
 export default BlogDetail;
