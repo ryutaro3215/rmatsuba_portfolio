@@ -24,6 +24,9 @@
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Header height (condensed state) — used for sticky sub-bars */
+  --header-h: 52px;
 }
 
 [data-theme="light"] {
@@ -331,6 +334,9 @@ a {
 }
 
 @media (max-width: 720px) {
+  :root {
+    --header-h: 48px;
+  }
   .site-header {
     padding: 16px 22px;
   }

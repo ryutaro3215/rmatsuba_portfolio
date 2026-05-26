@@ -97,7 +97,7 @@ const Library = () => {
       <div
         style={{
           position: "sticky",
-          top: 0,
+          top: "var(--header-h)",
           zIndex: 40,
           background: "color-mix(in oklch, var(--bg) 85%, transparent)",
           backdropFilter: "blur(16px)",
