@@ -4,7 +4,6 @@ export default {
   extends: [vikeReact],
   title: "rmatsuba.com",
   description:
-    "This site is a personal blog of rmatsuba. I write about web development, programming, and other tech-related topics.\
-			I also share my thoughts on various topics and my personal projects.\
-		I shared all the books I have read. This  site is also my portfolio where I showcase my projects and share my knowledge with the world.",
+    "松葉隆太郎のポートフォリオ兼ブログ。経営学・組織論の研究者/学習者として、読んだ本・書いた思考・作ったプロダクトを記録するサイトです。",
+  lang: "ja",
 };

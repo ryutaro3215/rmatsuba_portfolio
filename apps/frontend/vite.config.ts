@@ -1,8 +1,28 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import vike from "vike/plugin";
 import { defineConfig } from "vite";
 import Sitemap from "vite-plugin-sitemap";
+
+/** ビルド時に contents/posts/ からブログ記事のURLを収集 */
+function getBlogRoutes(): string[] {
+  try {
+    const postsDir = resolve(__dirname, "contents/posts");
+    return readdirSync(postsDir)
+      .filter((f) => f.endsWith(".md"))
+      .flatMap((f) => {
+        const content = readFileSync(resolve(postsDir, f), "utf-8");
+        const draftMatch = content.match(/^draft:\s*(true|false)/m);
+        if (draftMatch?.[1] === "true") return [];
+        const slugMatch = content.match(/^slug:\s*"?([^"\n]+)"?/m);
+        return slugMatch ? [`/blogs/${slugMatch[1].trim()}`] : [];
+      });
+  } catch {
+    return [];
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig(() => {
@@ -37,8 +57,8 @@ export default defineConfig(() => {
       Sitemap({
         hostname: "https://rmatsuba.com",
         outDir: "dist/client",
-        exclude: ["/404"],
-        dynamicRoutes: ["/", "/about", "/blogs", "/books"],
+        exclude: ["/404", "/google6287e9d2588ae118"],
+        dynamicRoutes: ["/", "/about", "/blogs", "/books", ...getBlogRoutes()],
       }),
     ],
   };
