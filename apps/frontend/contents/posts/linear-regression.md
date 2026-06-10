@@ -1,3 +1,16 @@
+---
+title: "線形回帰"
+emoji: "📈"
+date: "2026-06-10"
+created_at: "2026-06-10T00:00:00.000Z"
+updated_at: "2026-06-10T14:30:53.180Z"
+draft: false
+slug: "linear-regression"
+tags:
+  - "machine-learning"
+  - "statistic"
+---
+
 # 線形回帰（Linear Regression / Least Squares）
 
 ## 概要

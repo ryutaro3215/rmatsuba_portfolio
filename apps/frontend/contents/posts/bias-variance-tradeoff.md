@@ -1,3 +1,16 @@
+---
+title: "バイアス・バリアンストレードオフ"
+emoji: "⚖️"
+date: "2026-06-10"
+created_at: "2026-06-10T00:00:00.000Z"
+updated_at: "2026-06-10T14:30:53.142Z"
+draft: false
+slug: "bias-variance-tradeoff"
+tags:
+  - "machine-learning"
+  - "statistic"
+---
+
 # バイアス・バリアンストレードオフ（Bias-Variance Tradeoff）
 
 ## 概要

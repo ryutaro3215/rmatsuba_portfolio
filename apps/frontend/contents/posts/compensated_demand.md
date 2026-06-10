@@ -1,3 +1,16 @@
+---
+title: "補償需要"
+emoji: "📉"
+date: "2026-06-10"
+created_at: "2026-06-10T00:00:00.000Z"
+updated_at: "2026-06-10T14:30:53.153Z"
+draft: false
+slug: "compensated_demand"
+tags:
+  - "economics"
+  - "mathematica"
+---
+
 # 補償需要（Compensated Demand）
 
 ## 概念
