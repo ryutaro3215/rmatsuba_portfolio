@@ -1,4 +1,4 @@
-.PHONY: newpost importpost
+.PHONY: newpost importpost exportbooks exportbooks-csv
 
 newpost:
 	@read -p "Title: " title; \
@@ -16,6 +16,13 @@ newpost:
 
 importpost:
 	bun run apps/frontend/scripts/import_posts.ts
+
+
+exportbooks:
+	bun --env-file=apps/frontend/.env.local run scripts/export_books.ts
+
+exportbooks-csv:
+	bun --env-file=apps/frontend/.env.local run scripts/export_books.ts --format csv
 
 
 typebuild:
