@@ -13,6 +13,22 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+// ─── .env.local の読み込み ────────────────────────────────────────────────────
+
+const envFile = path.resolve(
+  path.dirname(new URL(import.meta.url).pathname),
+  "../apps/frontend/.env.local",
+);
+try {
+  const text = await Bun.file(envFile).text();
+  for (const line of text.split("\n")) {
+    const match = line.match(/^([^#=\s][^=]*)=["']?(.+?)["']?\s*$/);
+    if (match) process.env[match[1]] = match[2];
+  }
+} catch {
+  // ファイルが存在しない場合は無視
+}
+
 // ─── 環境変数 ─────────────────────────────────────────────────────────────────
 
 const serviceDomain = process.env.VITE_MICROCMS_SERVICE_DOMAIN;
