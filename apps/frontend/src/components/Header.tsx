@@ -7,6 +7,7 @@ export const navItems = [
   { to: "/about", label: "About", num: "II" },
   { to: "/blogs", label: "Blog", num: "III" },
   { to: "/books", label: "Library", num: "IV" },
+  { to: "/bookstores", label: "Bookstores", num: "V" },
 ];
 
 export function Header() {

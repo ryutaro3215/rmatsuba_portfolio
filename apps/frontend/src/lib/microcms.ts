@@ -1,4 +1,4 @@
-import type { Book } from "@mysite/shared";
+import type { Book, Bookstore } from "@mysite/shared";
 import { createClient } from "microcms-js-sdk";
 
 function getClient() {
@@ -60,4 +60,60 @@ export async function getBookById(id: string): Promise<Book> {
     contentId: id,
   });
   return normalizeBook(raw);
+}
+
+// --- Bookstores ---
+
+type MicroCMSBookstore = {
+  id: string;
+  name: string;
+  address: string;
+  prefecture?: string[];
+  nearestStation: string;
+  type?: string[];
+  features: string;
+  rating?: string[];
+  images?: { url: string }[];
+  mapUrl: string;
+};
+
+function normalizeBookstore(raw: MicroCMSBookstore): Bookstore {
+  return {
+    id: raw.id,
+    name: raw.name,
+    address: raw.address,
+    prefecture: raw.prefecture?.[0] ?? "",
+    nearestStation: raw.nearestStation,
+    type: (raw.type?.[0] ?? "新本屋") as Bookstore["type"],
+    features: raw.features,
+    rating: raw.rating?.[0] ? Number(raw.rating[0]) : 3,
+    images: raw.images ?? [],
+    mapUrl: raw.mapUrl ?? "",
+  };
+}
+
+export async function getAllBookstores(): Promise<Bookstore[]> {
+  const limit = 100;
+  let offset = 0;
+  const allContents: MicroCMSBookstore[] = [];
+
+  while (true) {
+    const res = await getClient().getList<MicroCMSBookstore>({
+      endpoint: "bookstores",
+      queries: { limit, offset },
+    });
+    allContents.push(...res.contents);
+    if (offset + limit >= res.totalCount) break;
+    offset += limit;
+  }
+
+  return allContents.map(normalizeBookstore);
+}
+
+export async function getBookstoreById(id: string): Promise<Bookstore> {
+  const raw = await getClient().getListDetail<MicroCMSBookstore>({
+    endpoint: "bookstores",
+    contentId: id,
+  });
+  return normalizeBookstore(raw);
 }
