@@ -8,7 +8,7 @@ Personal portfolio/blog site (rmatsuba_portfolio). Turborepo monorepo with pnpm 
 
 ## Monorepo Structure
 
-- **`apps/frontend`** — React SPA (Vite + React 19 + React Router + Tailwind CSS v4). Uses React Compiler via babel-plugin-react-compiler.
+- **`apps/frontend`** — Vike (vike-react) SSG/prerendered app (Vite + React 19 + Tailwind CSS v4). Uses React Compiler via babel-plugin-react-compiler. File-based routing under `src/pages/` with `+Page.tsx` / `+config.ts` / `+data.ts` / `+Head.tsx` conventions. (`react-router` remains a dependency but is no longer used.)
 - **`packages/shared`** (`@mysite/shared`) — Shared Zod schemas and TypeScript types (Book, FrontMatter/ParsedPost, Tech). Must be built before frontend can consume it.
 
 ## Commands
@@ -43,7 +43,7 @@ Book and tech data live as typed arrays in `apps/frontend/src/data/` (books.ts, 
 
 ### Routing
 
-React Router v7 (browser router) defined in `apps/frontend/src/app/router.tsx`. Routes: `/` (Home), `/about`, `/blog`, `/blog/:slug`, `/books` (Library), `/books/:bookId`. All routes wrapped in `DefaultLayout` (Header + main + Footer).
+Vike file-based routing under `apps/frontend/src/pages/`. Routes: `/` (Home), `/about`, `/blogs`, `/blogs/@id` (post detail by slug), `/books`, `/books/@id`, `/bookstores`, `/bookstores/@id`, plus `_error`. Detail pages use `+data.ts` (loads the entity, throws `render(404)` if missing) and `+onBeforePrerenderStart.ts` (enumerates static paths for prerendering). All pages wrapped in `src/pages/+Layout.tsx` (Header + main + Footer); per-page `<head>` via `+Head.tsx` / `+config.ts` / `useConfig`.
 
 ### Shared Package
 

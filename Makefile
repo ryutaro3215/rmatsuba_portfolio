@@ -1,4 +1,4 @@
-.PHONY: newpost importpost exportbooks exportbooks-csv
+.PHONY: newpost importpost exportbooks exportbooks-csv downloadmedia
 
 newpost:
 	@read -p "Title: " title; \
@@ -24,6 +24,9 @@ exportbooks:
 exportbooks-csv:
 	bun --env-file=apps/frontend/.env.local run scripts/export_books.ts --format csv
 
+
+downloadmedia:
+	bun --env-file=apps/frontend/.env.local run scripts/download_media.ts
 
 typebuild:
 	cd packages/shared && pnpm build

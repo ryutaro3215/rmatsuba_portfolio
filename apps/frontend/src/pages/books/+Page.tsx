@@ -95,6 +95,7 @@ const Library = () => {
 
       {/* Genre filter (sticky) */}
       <div
+        className="genre-filter"
         style={{
           position: "sticky",
           top: "var(--header-h)",
@@ -107,6 +108,7 @@ const Library = () => {
         }}
       >
         <div
+          className="genre-filter-track"
           style={{
             maxWidth: 1320,
             margin: "0 auto",
@@ -215,6 +217,20 @@ const Library = () => {
           div[style*="padding: 140px 40px"] { padding-left: 22px !important; padding-right: 22px !important; }
           div[style*="padding: 20px 40px"] { padding-left: 22px !important; padding-right: 22px !important; }
           div[style*="padding: 12px 40px"] { padding-left: 22px !important; padding-right: 22px !important; }
+
+          /* スマホではジャンルタブを上部にスティックさせず、1行の横スクロール（スライドバー）にして
+             画面の占有を減らす。 */
+          .genre-filter {
+            position: static !important;
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
+          }
+          .genre-filter-track {
+            flex-wrap: nowrap !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+          }
+          .genre-filter-track::-webkit-scrollbar { display: none; }
         }
       `}</style>
     </div>

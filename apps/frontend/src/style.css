@@ -318,9 +318,11 @@ a {
   mix-blend-mode: difference;
   color: #fff;
 }
+/* light モードでは difference ブレンドだと最上部で文字が白く残り背景と同化するため、
+   通常ブレンドで濃いインク色に固定して可読性を確保する。 */
 [data-theme="light"] .site-header {
-  mix-blend-mode: difference;
-  color: #fff;
+  mix-blend-mode: normal;
+  color: var(--ink);
 }
 
 .site-header.condensed {
@@ -668,6 +670,12 @@ a {
 
 /* ─── Katex ─── */
 .katex {
+  color: inherit;
+}
+/* KaTeX はアクセント記号(\hat, \bar, \vec など)を <span class="accent"> で描画するため、
+   汎用ユーティリティ .accent { color: var(--accent) } と衝突し数式の一部だけ色がつく。
+   KaTeX 内では色を継承させて衝突を打ち消す。 */
+.katex .accent {
   color: inherit;
 }
 
